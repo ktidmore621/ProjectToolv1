@@ -916,7 +916,7 @@ function openTaskDrawer(projectId, taskId) {
 }
 
 function _openDrawer(title, subtitle) {
-  closeDrawer();
+  document.getElementById('drawerOverlay')?.remove();
 
   const overlay = document.createElement('div');
   overlay.className = 'drawer-overlay';
