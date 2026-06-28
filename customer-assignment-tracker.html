@@ -237,7 +237,7 @@
     .meta-value { font-size: 14px; font-weight: 500; }
 
     /* ── Tasks ── */
-    .task-row { display: grid; grid-template-columns: 28px 1fr 180px 160px; align-items: center; gap: 16px; padding: 14px 16px; border-bottom: 1px solid var(--border); transition: background .1s; }
+    .task-row { display: grid; grid-template-columns: 28px 1fr 170px 150px 96px; align-items: center; gap: 14px; padding: 12px 16px; border-bottom: 1px solid var(--border); transition: background .1s; }
     .task-row:last-child { border-bottom: none; }
     .task-row:hover { background: var(--bg); }
     .task-num { width: 24px; height: 24px; border-radius: 50%; background: var(--border); color: var(--text-muted); font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
@@ -263,6 +263,20 @@
       width: 100%;
     }
     .task-date-input:focus, .task-select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(37,99,235,.12); }
+    .btn-notes {
+      padding: 5px 10px;
+      font-size: 11px;
+      font-weight: 500;
+      border-radius: var(--radius);
+      border: 1px solid var(--border-strong);
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background .12s, color .12s, border-color .12s;
+      display: inline-flex; align-items: center; gap: 4px;
+    }
+    .btn-notes:hover { background: var(--accent-light); color: var(--accent); border-color: var(--accent); }
 
     /* ── Back link ── */
     .back-link {
@@ -297,10 +311,145 @@
     .modal-title { font-size: 16px; font-weight: 600; }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     @keyframes slideUp { from { transform: translateY(12px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    @keyframes slideInRight { from { transform: translateX(100%); } to { transform: translateX(0); } }
 
     /* ── Confirm dialog ── */
     .confirm-body { padding: 20px 24px; color: var(--text-muted); font-size: 14px; line-height: 1.6; }
     .confirm-actions { padding: 0 24px 20px; display: flex; gap: 10px; justify-content: flex-end; }
+
+    /* ── Drawer ── */
+    .drawer-overlay {
+      position: fixed; inset: 0;
+      background: rgba(15,23,42,.35);
+      z-index: 200;
+      display: flex; justify-content: flex-end;
+      animation: fadeIn .2s ease;
+    }
+    .drawer {
+      width: 480px; max-width: 100vw;
+      height: 100%;
+      background: var(--surface);
+      border-left: 1px solid var(--border);
+      box-shadow: -4px 0 32px rgba(0,0,0,.12);
+      display: flex; flex-direction: column;
+      animation: slideInRight .25s ease;
+    }
+    .drawer-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      flex-shrink: 0;
+      background: var(--surface);
+    }
+    .drawer-title {
+      font-size: 14px; font-weight: 600;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .drawer-title-sub {
+      font-size: 11px; color: var(--text-muted); font-weight: 400;
+      text-transform: uppercase; letter-spacing: .5px;
+      margin-bottom: 2px;
+    }
+    .drawer-close {
+      width: 30px; height: 30px; border-radius: var(--radius);
+      border: none; background: transparent; cursor: pointer;
+      color: var(--text-muted); font-size: 16px;
+      display: flex; align-items: center; justify-content: center;
+      transition: background .15s, color .15s;
+      flex-shrink: 0;
+    }
+    .drawer-close:hover { background: var(--bg); color: var(--text); }
+    .drawer-body {
+      flex: 1; overflow-y: auto; padding: 20px;
+      display: flex; flex-direction: column; gap: 24px;
+    }
+
+    /* ── Rich text editor ── */
+    .rte-section-label {
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .6px; color: var(--text-muted); margin-bottom: 8px;
+    }
+    .rte-wrap {
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius);
+      overflow: hidden;
+      transition: border-color .15s, box-shadow .15s;
+    }
+    .rte-wrap:focus-within {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(37,99,235,.12);
+    }
+    .rte-toolbar {
+      display: flex; align-items: center; gap: 2px; padding: 6px 8px;
+      background: var(--bg); border-bottom: 1px solid var(--border);
+    }
+    .rte-btn {
+      width: 28px; height: 28px; border-radius: 4px;
+      border: none; background: transparent; cursor: pointer;
+      color: var(--text-muted); font-size: 13px;
+      display: flex; align-items: center; justify-content: center;
+      transition: background .1s, color .1s;
+      line-height: 1;
+    }
+    .rte-btn:hover { background: var(--border); color: var(--text); }
+    .rte-sep { width: 1px; height: 18px; background: var(--border); margin: 0 4px; flex-shrink: 0; }
+    .rte-editor {
+      min-height: 90px; max-height: 180px;
+      padding: 10px 12px; outline: none;
+      font-size: 14px; font-family: inherit; line-height: 1.6;
+      color: var(--text); overflow-y: auto;
+    }
+    .rte-editor:empty::before {
+      content: attr(data-placeholder);
+      color: var(--text-light);
+      pointer-events: none;
+    }
+    .rte-editor ul, .rte-editor ol { padding-left: 20px; }
+    .rte-actions { padding-top: 10px; }
+
+    /* ── History ── */
+    .history-divider {
+      display: flex; align-items: center; gap: 10px;
+    }
+    .history-divider-label {
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .6px; color: var(--text-muted); white-space: nowrap;
+    }
+    .history-divider-line { flex: 1; height: 1px; background: var(--border); }
+    .history-list { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+    .history-entry {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 11px 13px;
+      background: var(--surface);
+    }
+    .history-entry.is-activity {
+      background: var(--bg);
+      border-color: var(--border);
+    }
+    .history-entry-meta {
+      display: flex; align-items: center; gap: 7px; margin-bottom: 5px;
+    }
+    .history-tag {
+      font-size: 10px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .5px; padding: 1px 6px; border-radius: 99px;
+      background: var(--border); color: var(--text-muted);
+      border: 1px solid var(--border-strong); flex-shrink: 0;
+    }
+    .history-ts {
+      font-size: 11px; color: var(--text-light);
+    }
+    .history-content-activity {
+      font-style: italic; color: var(--text-muted); font-size: 13px; line-height: 1.5;
+    }
+    .history-content-note {
+      font-size: 14px; line-height: 1.6; color: var(--text);
+    }
+    .history-content-note ul, .history-content-note ol { padding-left: 20px; }
+    .history-empty {
+      color: var(--text-muted); font-size: 13px;
+      text-align: center; padding: 28px 0;
+    }
 
     /* ── Utility ── */
     .hidden { display: none !important; }
@@ -308,7 +457,7 @@
     .fw-600 { font-weight: 600; }
     .task-section-header { padding: 12px 16px 10px; background: var(--bg); border-bottom: 1px solid var(--border); }
     .task-section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .7px; color: var(--text-muted); }
-    .task-col-header { display: grid; grid-template-columns: 28px 1fr 180px 160px; gap: 16px; padding: 8px 16px; background: var(--bg); border-bottom: 1px solid var(--border); }
+    .task-col-header { display: grid; grid-template-columns: 28px 1fr 170px 150px 96px; gap: 14px; padding: 8px 16px; background: var(--bg); border-bottom: 1px solid var(--border); }
     .task-col-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; color: var(--text-muted); }
   </style>
 </head>
@@ -319,8 +468,6 @@
 </header>
 
 <main class="main" id="app"></main>
-
-<!-- Templates are rendered by JS below -->
 
 <script>
 // ─────────────────────────────────────────────
@@ -345,25 +492,42 @@ function loadData() {
   catch { return { projects: [], nextId: 1 }; }
 }
 function saveData(data) { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
-function getData() { return loadData(); }
+
+function getData() {
+  const data = loadData();
+  // Migrate: ensure history arrays exist on all projects and tasks
+  data.projects.forEach(p => {
+    if (!p.history) p.history = [];
+    p.tasks.forEach(t => { if (!t.history) t.history = []; });
+  });
+  return data;
+}
 
 function padId(n) { return 'PRJ-' + String(n).padStart(4, '0'); }
 
 function createProject({ mcpNum, mcpName, assignee, assignmentDate }) {
   const data = getData();
   const id = padId(data.nextId++);
+  const ts = Date.now();
   const tasks = TASK_TEMPLATES.map((name, i) => ({
     id: i + 1,
     name,
     status: 'Not Started',
     completionDate: '',
+    history: [],
   }));
-  data.projects.push({ id, mcpNum, mcpName, assignee, assignmentDate, status: 'Open', tasks });
+  const project = { id, mcpNum, mcpName, assignee, assignmentDate, status: 'Open', tasks, history: [] };
+  project.history.push({ type: 'activity', text: 'Project created', ts });
+  data.projects.push(project);
   saveData(data);
   return id;
 }
 
-function getProject(id) { return getData().projects.find(p => p.id === id); }
+function getProject(id) {
+  const data = getData();
+  const p = data.projects.find(p => p.id === id);
+  return p || null;
+}
 
 function updateTask(projectId, taskId, fields) {
   const data = getData();
@@ -378,7 +542,32 @@ function updateTask(projectId, taskId, fields) {
 function closeProject(projectId) {
   const data = getData();
   const p = data.projects.find(p => p.id === projectId);
-  if (p) { p.status = 'Closed'; saveData(data); }
+  if (p) {
+    if (!p.history) p.history = [];
+    p.history.push({ type: 'activity', text: 'Project closed', ts: Date.now() });
+    p.status = 'Closed';
+    saveData(data);
+  }
+}
+
+function addProjectNote(projectId, html) {
+  const data = getData();
+  const p = data.projects.find(p => p.id === projectId);
+  if (!p) return;
+  if (!p.history) p.history = [];
+  p.history.push({ type: 'note', html, ts: Date.now() });
+  saveData(data);
+}
+
+function addTaskNote(projectId, taskId, html) {
+  const data = getData();
+  const p = data.projects.find(p => p.id === projectId);
+  if (!p) return;
+  const t = p.tasks.find(t => t.id === taskId);
+  if (!t) return;
+  if (!t.history) t.history = [];
+  t.history.push({ type: 'note', html, ts: Date.now() });
+  saveData(data);
 }
 
 function progressText(project) {
@@ -389,13 +578,14 @@ function progressText(project) {
 // ─────────────────────────────────────────────
 //  ROUTER / STATE
 // ─────────────────────────────────────────────
-let currentView = 'home'; // 'home' | 'create' | 'detail' | 'closed'
-let currentTab = 'open';  // used on home to toggle open/closed
+let currentView = 'home';
+let currentTab = 'open';
 let currentProjectId = null;
 
 function navigate(view, projectId) {
   currentView = view;
   if (projectId !== undefined) currentProjectId = projectId;
+  closeDrawer();
   render();
 }
 
@@ -420,6 +610,17 @@ function statusSelectStyle(select) {
 
 function escHtml(s) {
   return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function formatTs(ts) {
+  const d = new Date(ts);
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+    + ' at ' + d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+}
+
+function formatDateForActivity(dateStr) {
+  const [y, m, d] = dateStr.split('-').map(Number);
+  return new Date(y, m - 1, d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
 // ─────────────────────────────────────────────
@@ -564,6 +765,10 @@ function renderDetail() {
           value="${escHtml(t.completionDate)}"
           onchange="handleTaskDate('${escHtml(p.id)}', ${t.id}, this.value)"
           ${isClosed ? 'disabled' : ''} />
+        <button class="btn-notes" onclick="openTaskDrawer('${escHtml(p.id)}', ${t.id})">
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12.5V14h1.5l8.06-8.06-1.5-1.5L2 12.5z"/><path d="M13.06 3.44a1.06 1.06 0 0 0-1.5 0l-.56.56 1.5 1.5.56-.56a1.06 1.06 0 0 0 0-1.5z"/></svg>
+          Notes
+        </button>
       </div>`;
   }).join('');
 
@@ -576,6 +781,10 @@ function renderDetail() {
           <span class="${statusBadgeClass(p.status)}" style="margin-top:6px;display:inline-flex">${p.status}</span>
         </div>
         <div class="detail-actions">
+          <button class="btn btn-ghost" onclick="openProjectDrawer('${escHtml(p.id)}')">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2H3a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V8"/><path d="M13 1l2 2-6 6H7V7l6-6z"/></svg>
+            Project Notes &amp; Activity
+          </button>
           ${!isClosed
             ? `<button class="btn btn-success" onclick="showCloseConfirm('${escHtml(p.id)}')">Close Project</button>`
             : `<span class="badge badge-closed" style="padding:8px 14px;font-size:12px">Project Closed</span>`}
@@ -603,17 +812,37 @@ function renderDetail() {
         <div class="task-col-label">Task</div>
         <div class="task-col-label">Status</div>
         <div class="task-col-label">Completion Date</div>
+        <div class="task-col-label">Notes</div>
       </div>
       ${taskRows}
     </div>`;
 }
 
 function handleTaskStatus(projectId, taskId, select) {
+  const data = getData();
+  const p = data.projects.find(p => p.id === projectId);
+  if (!p) return;
+  const t = p.tasks.find(t => t.id === taskId);
+  if (!t) return;
+
+  const oldStatus = t.status;
+  const newStatus = select.value;
   statusSelectStyle(select);
-  updateTask(projectId, taskId, { status: select.value });
-  // Refresh progress in detail header without full re-render
-  const p = getProject(projectId);
-  const { done, total } = progressText(p);
+
+  if (oldStatus !== newStatus) {
+    if (!t.history) t.history = [];
+    if (!p.history) p.history = [];
+    const text = `Status changed from "${oldStatus}" to "${newStatus}"`;
+    const ts = Date.now();
+    t.history.push({ type: 'activity', text, ts });
+    p.history.push({ type: 'activity', text: `Task "${t.name}": ${text}`, ts });
+  }
+  t.status = newStatus;
+  saveData(data);
+
+  // Refresh progress display without full re-render
+  const proj = getProject(projectId);
+  const { done, total } = progressText(proj);
   const pct = total ? Math.round((done / total) * 100) : 0;
   document.querySelectorAll('.progress-fill').forEach(el => el.style.width = pct + '%');
   document.querySelectorAll('.meta-value').forEach(el => {
@@ -622,7 +851,19 @@ function handleTaskStatus(projectId, taskId, select) {
 }
 
 function handleTaskDate(projectId, taskId, value) {
-  updateTask(projectId, taskId, { completionDate: value });
+  const data = getData();
+  const p = data.projects.find(p => p.id === projectId);
+  if (!p) return;
+  const t = p.tasks.find(t => t.id === taskId);
+  if (!t) return;
+
+  if (!t.history) t.history = [];
+  if (value) {
+    const formatted = formatDateForActivity(value);
+    t.history.push({ type: 'activity', text: `Completion date set to ${formatted}`, ts: Date.now() });
+  }
+  t.completionDate = value;
+  saveData(data);
 }
 
 function showCloseConfirm(projectId) {
@@ -654,14 +895,179 @@ function confirmClose(projectId) {
 }
 
 // ─────────────────────────────────────────────
+//  DRAWER
+// ─────────────────────────────────────────────
+let drawerCtx = null; // { projectId, taskId: number|null }
+
+function openProjectDrawer(projectId) {
+  const p = getProject(projectId);
+  if (!p) return;
+  drawerCtx = { projectId, taskId: null };
+  _openDrawer(p.id + ' — Project Notes & Activity', 'Project');
+}
+
+function openTaskDrawer(projectId, taskId) {
+  const p = getProject(projectId);
+  if (!p) return;
+  const t = p.tasks.find(t => t.id === taskId);
+  if (!t) return;
+  drawerCtx = { projectId, taskId };
+  _openDrawer(t.name, 'Task Notes & Activity');
+}
+
+function _openDrawer(title, subtitle) {
+  closeDrawer();
+
+  const overlay = document.createElement('div');
+  overlay.className = 'drawer-overlay';
+  overlay.id = 'drawerOverlay';
+  overlay.addEventListener('click', function(e) {
+    if (e.target === overlay) closeDrawer();
+  });
+
+  const drawer = document.createElement('div');
+  drawer.className = 'drawer';
+  drawer.addEventListener('click', function(e) { e.stopPropagation(); });
+
+  drawer.innerHTML = `
+    <div class="drawer-header">
+      <div style="min-width:0">
+        <div class="drawer-title-sub">${escHtml(subtitle)}</div>
+        <div class="drawer-title">${escHtml(title)}</div>
+      </div>
+      <button class="drawer-close" onclick="closeDrawer()" title="Close">✕</button>
+    </div>
+    <div class="drawer-body">
+      <div>
+        <div class="rte-section-label">Add Note</div>
+        <div class="rte-wrap">
+          <div class="rte-toolbar">
+            <button class="rte-btn" title="Bold" onmousedown="event.preventDefault();rteCmd('bold')"><b>B</b></button>
+            <button class="rte-btn" title="Italic" onmousedown="event.preventDefault();rteCmd('italic')"><i>I</i></button>
+            <button class="rte-btn" title="Underline" onmousedown="event.preventDefault();rteCmd('underline')"><u>U</u></button>
+            <div class="rte-sep"></div>
+            <button class="rte-btn" title="Bullet list" onmousedown="event.preventDefault();rteCmd('insertUnorderedList')" style="font-size:15px;letter-spacing:-1px">≡</button>
+            <button class="rte-btn" title="Numbered list" onmousedown="event.preventDefault();rteCmd('insertOrderedList')" style="font-size:12px">1≡</button>
+          </div>
+          <div class="rte-editor" id="rteEditor" contenteditable="true" data-placeholder="Write a note…"></div>
+        </div>
+        <div class="rte-actions">
+          <button class="btn btn-primary" onclick="saveDrawerNote()">Save Note</button>
+        </div>
+      </div>
+      <div>
+        <div class="history-divider">
+          <span class="history-divider-label">History</span>
+          <div class="history-divider-line"></div>
+        </div>
+        <div id="drawerHistory"></div>
+      </div>
+    </div>`;
+
+  overlay.appendChild(drawer);
+  document.body.appendChild(overlay);
+
+  // Focus editor
+  const editor = document.getElementById('rteEditor');
+  if (editor) editor.focus();
+
+  renderDrawerHistory();
+}
+
+function closeDrawer() {
+  document.getElementById('drawerOverlay')?.remove();
+  drawerCtx = null;
+}
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeDrawer();
+});
+
+function rteCmd(cmd) {
+  document.execCommand(cmd, false, null);
+  const editor = document.getElementById('rteEditor');
+  if (editor) editor.focus();
+}
+
+function saveDrawerNote() {
+  if (!drawerCtx) return;
+  const editor = document.getElementById('rteEditor');
+  if (!editor) return;
+  const html = editor.innerHTML.trim();
+
+  // Check for effectively empty content
+  const tmp = document.createElement('div');
+  tmp.innerHTML = html;
+  if (!tmp.textContent.trim()) return;
+
+  const { projectId, taskId } = drawerCtx;
+  if (taskId === null) {
+    addProjectNote(projectId, html);
+  } else {
+    addTaskNote(projectId, taskId, html);
+  }
+
+  editor.innerHTML = '';
+  renderDrawerHistory();
+}
+
+function renderDrawerHistory() {
+  const histEl = document.getElementById('drawerHistory');
+  if (!histEl || !drawerCtx) return;
+
+  const { projectId, taskId } = drawerCtx;
+  let entries = [];
+
+  if (taskId === null) {
+    const p = getProject(projectId);
+    entries = p ? (p.history || []) : [];
+  } else {
+    const p = getProject(projectId);
+    if (p) {
+      const t = p.tasks.find(t => t.id === taskId);
+      entries = t ? (t.history || []) : [];
+    }
+  }
+
+  const sorted = [...entries].sort((a, b) => b.ts - a.ts);
+
+  if (sorted.length === 0) {
+    histEl.innerHTML = '<div class="history-empty">No history yet.</div>';
+    return;
+  }
+
+  histEl.innerHTML = '<div class="history-list">' + sorted.map(entry => {
+    const ts = escHtml(formatTs(entry.ts));
+    if (entry.type === 'activity') {
+      return `
+        <div class="history-entry is-activity">
+          <div class="history-entry-meta">
+            <span class="history-tag">Activity</span>
+            <span class="history-ts">${ts}</span>
+          </div>
+          <div class="history-content-activity">${escHtml(entry.text)}</div>
+        </div>`;
+    } else {
+      return `
+        <div class="history-entry">
+          <div class="history-entry-meta">
+            <span class="history-ts">${ts}</span>
+          </div>
+          <div class="history-content-note">${entry.html}</div>
+        </div>`;
+    }
+  }).join('') + '</div>';
+}
+
+// ─────────────────────────────────────────────
 //  RENDER
 // ─────────────────────────────────────────────
 function render() {
   const app = document.getElementById('app');
   let html = '';
-  if (currentView === 'home')    html = renderHome();
-  else if (currentView === 'create') html = renderCreate();
-  else if (currentView === 'detail') html = renderDetail();
+  if (currentView === 'home')         html = renderHome();
+  else if (currentView === 'create')  html = renderCreate();
+  else if (currentView === 'detail')  html = renderDetail();
   app.innerHTML = html;
 
   // Apply select colors after render
