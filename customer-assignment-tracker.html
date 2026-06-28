@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Customer Assignment Tracker</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --accent: #2563eb;
+      --accent-hover: #1d4ed8;
+      --accent-light: #eff6ff;
+      --surface: #ffffff;
+      --bg: #f8fafc;
+      --border: #e2e8f0;
+      --border-strong: #cbd5e1;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --text-light: #94a3b8;
+      --shadow: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.06);
+      --shadow-md: 0 4px 12px rgba(0,0,0,.08), 0 2px 4px rgba(0,0,0,.06);
+      --radius: 8px;
+      --radius-lg: 12px;
+
+      --status-not-started-bg: #f1f5f9;
+      --status-not-started-text: #475569;
+      --status-in-progress-bg: #dbeafe;
+      --status-in-progress-text: #1d4ed8;
+      --status-blocked-bg: #fee2e2;
+      --status-blocked-text: #b91c1c;
+      --status-complete-bg: #dcfce7;
+      --status-complete-text: #15803d;
+      --status-skipped-bg: #fef9c3;
+      --status-skipped-text: #a16207;
+      --status-cancelled-bg: #f3f4f6;
+      --status-cancelled-text: #6b7280;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 14px;
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+
+    /* ── Layout ── */
+    .app-header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0 32px;
+      display: flex;
+      align-items: center;
+      height: 56px;
+      gap: 12px;
+      box-shadow: var(--shadow);
+    }
+    .app-header .logo {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: -.3px;
+    }
+    .app-header .logo span { color: var(--text-muted); font-weight: 400; }
+
+    .main { max-width: 1100px; margin: 0 auto; padding: 32px 24px; }
+
+    /* ── Cards ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+    }
+    .card-header {
+      padding: 20px 24px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .card-title { font-size: 16px; font-weight: 600; }
+    .card-body { padding: 0; }
+
+    /* ── Buttons ── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: var(--radius);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      transition: background .15s, box-shadow .15s, transform .1s;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .btn:active { transform: translateY(1px); }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover { background: var(--accent-hover); box-shadow: 0 2px 8px rgba(37,99,235,.3); }
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-muted);
+      border: 1px solid var(--border-strong);
+    }
+    .btn-ghost:hover { background: var(--bg); color: var(--text); }
+    .btn-danger { background: #dc2626; color: #fff; }
+    .btn-danger:hover { background: #b91c1c; }
+    .btn-success { background: #16a34a; color: #fff; }
+    .btn-success:hover { background: #15803d; }
+
+    /* ── Tabs ── */
+    .tabs {
+      display: flex;
+      gap: 2px;
+      background: var(--border);
+      border-radius: var(--radius);
+      padding: 3px;
+    }
+    .tab-btn {
+      padding: 6px 18px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      transition: background .15s, color .15s;
+    }
+    .tab-btn.active { background: var(--surface); color: var(--text); box-shadow: var(--shadow); }
+
+    /* ── Tables ── */
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; }
+    thead th {
+      padding: 10px 16px;
+      text-align: left;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .6px;
+      color: var(--text-muted);
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+    }
+    tbody tr {
+      border-bottom: 1px solid var(--border);
+      transition: background .1s;
+    }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr.clickable { cursor: pointer; }
+    tbody tr.clickable:hover { background: var(--accent-light); }
+    tbody td { padding: 13px 16px; vertical-align: middle; }
+    .empty-row td {
+      text-align: center;
+      color: var(--text-muted);
+      padding: 48px 16px;
+      font-size: 14px;
+    }
+
+    /* ── Status badge ── */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 9px;
+      border-radius: 99px;
+      font-size: 11px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .badge-not-started  { background: var(--status-not-started-bg);  color: var(--status-not-started-text); }
+    .badge-in-progress  { background: var(--status-in-progress-bg);  color: var(--status-in-progress-text); }
+    .badge-blocked      { background: var(--status-blocked-bg);       color: var(--status-blocked-text); }
+    .badge-complete     { background: var(--status-complete-bg);      color: var(--status-complete-text); }
+    .badge-skipped      { background: var(--status-skipped-bg);       color: var(--status-skipped-text); }
+    .badge-cancelled    { background: var(--status-cancelled-bg);     color: var(--status-cancelled-text); }
+    .badge-open         { background: var(--status-in-progress-bg);   color: var(--status-in-progress-text); }
+    .badge-closed       { background: var(--status-complete-bg);      color: var(--status-complete-text); }
+
+    /* ── Progress bar ── */
+    .progress-wrap { display: flex; align-items: center; gap: 8px; }
+    .progress-bar {
+      flex: 1;
+      height: 6px;
+      background: var(--border);
+      border-radius: 99px;
+      overflow: hidden;
+      min-width: 80px;
+      max-width: 120px;
+    }
+    .progress-fill { height: 100%; background: var(--accent); border-radius: 99px; transition: width .3s; }
+    .progress-label { font-size: 12px; color: var(--text-muted); white-space: nowrap; }
+
+    /* ── Forms ── */
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 24px; }
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-group.full { grid-column: 1 / -1; }
+    label { font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: .5px; }
+    input[type="text"], input[type="date"], select {
+      padding: 9px 12px;
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius);
+      font-size: 14px;
+      font-family: inherit;
+      color: var(--text);
+      background: var(--surface);
+      transition: border-color .15s, box-shadow .15s;
+      outline: none;
+    }
+    input[type="text"]:focus, input[type="date"]:focus, select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(37,99,235,.12);
+    }
+    .form-actions { padding: 0 24px 24px; display: flex; gap: 10px; justify-content: flex-end; }
+
+    /* ── Project detail ── */
+    .detail-header {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+    .detail-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 20px; flex-wrap: wrap; }
+    .detail-pid { font-size: 22px; font-weight: 700; letter-spacing: -.5px; }
+    .detail-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+    .detail-meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; }
+    .meta-item { display: flex; flex-direction: column; gap: 4px; }
+    .meta-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; color: var(--text-muted); }
+    .meta-value { font-size: 14px; font-weight: 500; }
+
+    /* ── Tasks ── */
+    .task-row { display: grid; grid-template-columns: 28px 1fr 180px 160px; align-items: center; gap: 16px; padding: 14px 16px; border-bottom: 1px solid var(--border); transition: background .1s; }
+    .task-row:last-child { border-bottom: none; }
+    .task-row:hover { background: var(--bg); }
+    .task-num { width: 24px; height: 24px; border-radius: 50%; background: var(--border); color: var(--text-muted); font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .task-name { font-size: 14px; }
+    .task-select {
+      padding: 6px 10px;
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius);
+      font-size: 12px;
+      font-family: inherit;
+      cursor: pointer;
+      background: var(--surface);
+      outline: none;
+    }
+    .task-date-input {
+      padding: 6px 10px;
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius);
+      font-size: 12px;
+      font-family: inherit;
+      background: var(--surface);
+      outline: none;
+      width: 100%;
+    }
+    .task-date-input:focus, .task-select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(37,99,235,.12); }
+
+    /* ── Back link ── */
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 20px;
+      cursor: pointer;
+      transition: color .15s;
+    }
+    .back-link:hover { color: var(--accent); }
+
+    /* ── Modal ── */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(15,23,42,.4);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 100; padding: 24px;
+      animation: fadeIn .15s ease;
+    }
+    .modal {
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      width: 100%; max-width: 520px;
+      animation: slideUp .2s ease;
+    }
+    .modal-header { padding: 20px 24px 16px; border-bottom: 1px solid var(--border); }
+    .modal-title { font-size: 16px; font-weight: 600; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes slideUp { from { transform: translateY(12px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+    /* ── Confirm dialog ── */
+    .confirm-body { padding: 20px 24px; color: var(--text-muted); font-size: 14px; line-height: 1.6; }
+    .confirm-actions { padding: 0 24px 20px; display: flex; gap: 10px; justify-content: flex-end; }
+
+    /* ── Utility ── */
+    .hidden { display: none !important; }
+    .text-muted { color: var(--text-muted); }
+    .fw-600 { font-weight: 600; }
+    .task-section-header { padding: 12px 16px 10px; background: var(--bg); border-bottom: 1px solid var(--border); }
+    .task-section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .7px; color: var(--text-muted); }
+    .task-col-header { display: grid; grid-template-columns: 28px 1fr 180px 160px; gap: 16px; padding: 8px 16px; background: var(--bg); border-bottom: 1px solid var(--border); }
+    .task-col-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; color: var(--text-muted); }
+  </style>
+</head>
+<body>
+
+<header class="app-header">
+  <div class="logo">Customer Assignment <span>Tracker</span></div>
+</header>
+
+<main class="main" id="app"></main>
+
+<!-- Templates are rendered by JS below -->
+
+<script>
+// ─────────────────────────────────────────────
+//  DATA LAYER
+// ─────────────────────────────────────────────
+const STORAGE_KEY = 'cat_data_v1';
+const TASK_TEMPLATES = [
+  'Review customer billing history',
+  'Complete billing analysis',
+  'Schedule / complete customer visit',
+  'Identify billing concerns',
+  'Determine if action plan is needed',
+  'Create action plan tasks',
+  'Complete action plan follow-up',
+  'Final review',
+  'Close project',
+];
+const TASK_STATUSES = ['Not Started', 'In Progress', 'Blocked', 'Complete', 'Skipped', 'Cancelled'];
+
+function loadData() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || { projects: [], nextId: 1 }; }
+  catch { return { projects: [], nextId: 1 }; }
+}
+function saveData(data) { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
+function getData() { return loadData(); }
+
+function padId(n) { return 'PRJ-' + String(n).padStart(4, '0'); }
+
+function createProject({ mcpNum, mcpName, assignee, assignmentDate }) {
+  const data = getData();
+  const id = padId(data.nextId++);
+  const tasks = TASK_TEMPLATES.map((name, i) => ({
+    id: i + 1,
+    name,
+    status: 'Not Started',
+    completionDate: '',
+  }));
+  data.projects.push({ id, mcpNum, mcpName, assignee, assignmentDate, status: 'Open', tasks });
+  saveData(data);
+  return id;
+}
+
+function getProject(id) { return getData().projects.find(p => p.id === id); }
+
+function updateTask(projectId, taskId, fields) {
+  const data = getData();
+  const p = data.projects.find(p => p.id === projectId);
+  if (!p) return;
+  const t = p.tasks.find(t => t.id === taskId);
+  if (!t) return;
+  Object.assign(t, fields);
+  saveData(data);
+}
+
+function closeProject(projectId) {
+  const data = getData();
+  const p = data.projects.find(p => p.id === projectId);
+  if (p) { p.status = 'Closed'; saveData(data); }
+}
+
+function progressText(project) {
+  const done = project.tasks.filter(t => t.status === 'Complete' || t.status === 'Skipped' || t.status === 'Cancelled').length;
+  return { done, total: project.tasks.length };
+}
+
+// ─────────────────────────────────────────────
+//  ROUTER / STATE
+// ─────────────────────────────────────────────
+let currentView = 'home'; // 'home' | 'create' | 'detail' | 'closed'
+let currentTab = 'open';  // used on home to toggle open/closed
+let currentProjectId = null;
+
+function navigate(view, projectId) {
+  currentView = view;
+  if (projectId !== undefined) currentProjectId = projectId;
+  render();
+}
+
+// ─────────────────────────────────────────────
+//  HELPERS
+// ─────────────────────────────────────────────
+function statusBadgeClass(status) {
+  return 'badge badge-' + status.toLowerCase().replace(' ', '-');
+}
+
+function statusSelectStyle(select) {
+  const map = {
+    'Not Started': '#f1f5f9',
+    'In Progress': '#dbeafe',
+    'Blocked': '#fee2e2',
+    'Complete': '#dcfce7',
+    'Skipped': '#fef9c3',
+    'Cancelled': '#f3f4f6',
+  };
+  select.style.background = map[select.value] || '#fff';
+}
+
+function escHtml(s) {
+  return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ─────────────────────────────────────────────
+//  VIEWS
+// ─────────────────────────────────────────────
+function renderHome() {
+  const data = getData();
+  const openProjects = data.projects.filter(p => p.status === 'Open');
+  const closedProjects = data.projects.filter(p => p.status === 'Closed');
+
+  const rows = (list) => list.length === 0
+    ? `<tr class="empty-row"><td colspan="6">No projects here yet.</td></tr>`
+    : list.map(p => {
+        const { done, total } = progressText(p);
+        const pct = total ? Math.round((done / total) * 100) : 0;
+        return `
+          <tr class="clickable" onclick="navigate('detail','${escHtml(p.id)}')">
+            <td class="fw-600" style="color:var(--accent)">${escHtml(p.id)}</td>
+            <td>${escHtml(p.mcpNum)}</td>
+            <td>${escHtml(p.mcpName)}</td>
+            <td>${escHtml(p.assignee)}</td>
+            <td>${escHtml(p.assignmentDate)}</td>
+            <td>
+              <div class="progress-wrap">
+                <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+                <span class="progress-label">${done} / ${total} complete</span>
+              </div>
+            </td>
+          </tr>`;
+      }).join('');
+
+  const tableHtml = (list) => `
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th>Project ID</th><th>MCP #</th><th>MCP Name</th>
+          <th>Assignee</th><th>Assignment Date</th><th>Progress</th>
+        </tr></thead>
+        <tbody>${rows(list)}</tbody>
+      </table>
+    </div>`;
+
+  return `
+    <div class="card-header" style="margin-bottom:20px;background:transparent;border:none;padding:0;box-shadow:none">
+      <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+        <h1 style="font-size:20px;font-weight:700">Projects</h1>
+        <div class="tabs">
+          <button class="tab-btn ${currentTab==='open'?'active':''}" onclick="switchTab('open')">Open (${openProjects.length})</button>
+          <button class="tab-btn ${currentTab==='closed'?'active':''}" onclick="switchTab('closed')">Closed (${closedProjects.length})</button>
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="navigate('create')">+ Create Project</button>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">${currentTab === 'open' ? 'Open Projects' : 'Closed Projects'}</span>
+        ${currentTab === 'open'
+          ? `<span class="text-muted" style="font-size:13px">${openProjects.length} project${openProjects.length!==1?'s':''}</span>`
+          : `<span class="text-muted" style="font-size:13px">${closedProjects.length} project${closedProjects.length!==1?'s':''}</span>`}
+      </div>
+      ${currentTab === 'open' ? tableHtml(openProjects) : tableHtml(closedProjects)}
+    </div>`;
+}
+
+function switchTab(tab) {
+  currentTab = tab;
+  render();
+}
+
+function renderCreate() {
+  return `
+    <a class="back-link" onclick="navigate('home')">← Back to Projects</a>
+    <div class="card" style="max-width:600px">
+      <div class="card-header"><span class="card-title">Create New Project</span></div>
+      <div class="card-body">
+        <form id="createForm" onsubmit="handleCreate(event)">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>MCP #</label>
+              <input type="text" id="f_mcpNum" placeholder="e.g. 10042" required />
+            </div>
+            <div class="form-group">
+              <label>MCP Name</label>
+              <input type="text" id="f_mcpName" placeholder="e.g. Acme Corp" required />
+            </div>
+            <div class="form-group">
+              <label>Assignee Name</label>
+              <input type="text" id="f_assignee" placeholder="e.g. Jane Smith" required />
+            </div>
+            <div class="form-group">
+              <label>Assignment Date</label>
+              <input type="date" id="f_date" required />
+            </div>
+            <div class="form-group full" style="background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:16px;">
+              <label style="margin-bottom:8px">9 tasks will be created automatically</label>
+              <ol style="padding-left:18px;color:var(--text-muted);font-size:13px;line-height:2">
+                ${TASK_TEMPLATES.map(t => `<li>${escHtml(t)}</li>`).join('')}
+              </ol>
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="button" class="btn btn-ghost" onclick="navigate('home')">Cancel</button>
+            <button type="submit" class="btn btn-primary">Create Project</button>
+          </div>
+        </form>
+      </div>
+    </div>`;
+}
+
+function handleCreate(e) {
+  e.preventDefault();
+  const mcpNum = document.getElementById('f_mcpNum').value.trim();
+  const mcpName = document.getElementById('f_mcpName').value.trim();
+  const assignee = document.getElementById('f_assignee').value.trim();
+  const assignmentDate = document.getElementById('f_date').value;
+  const id = createProject({ mcpNum, mcpName, assignee, assignmentDate });
+  navigate('detail', id);
+}
+
+function renderDetail() {
+  const p = getProject(currentProjectId);
+  if (!p) { navigate('home'); return ''; }
+
+  const { done, total } = progressText(p);
+  const isClosed = p.status === 'Closed';
+
+  const taskRows = p.tasks.map((t, i) => {
+    const selOptions = TASK_STATUSES.map(s =>
+      `<option value="${s}" ${t.status===s?'selected':''}>${s}</option>`
+    ).join('');
+
+    return `
+      <div class="task-row">
+        <div class="task-num">${i + 1}</div>
+        <div class="task-name">${escHtml(t.name)}</div>
+        <select class="task-select" id="ts_${t.id}"
+          onchange="handleTaskStatus('${escHtml(p.id)}', ${t.id}, this)"
+          ${isClosed ? 'disabled' : ''}>
+          ${selOptions}
+        </select>
+        <input type="date" class="task-date-input" id="td_${t.id}"
+          value="${escHtml(t.completionDate)}"
+          onchange="handleTaskDate('${escHtml(p.id)}', ${t.id}, this.value)"
+          ${isClosed ? 'disabled' : ''} />
+      </div>`;
+  }).join('');
+
+  return `
+    <a class="back-link" onclick="navigate('home')">← Back to Projects</a>
+    <div class="detail-header">
+      <div class="detail-top">
+        <div>
+          <div class="detail-pid">${escHtml(p.id)}</div>
+          <span class="${statusBadgeClass(p.status)}" style="margin-top:6px;display:inline-flex">${p.status}</span>
+        </div>
+        <div class="detail-actions">
+          ${!isClosed
+            ? `<button class="btn btn-success" onclick="showCloseConfirm('${escHtml(p.id)}')">Close Project</button>`
+            : `<span class="badge badge-closed" style="padding:8px 14px;font-size:12px">Project Closed</span>`}
+        </div>
+      </div>
+      <div class="detail-meta">
+        <div class="meta-item"><div class="meta-label">MCP #</div><div class="meta-value">${escHtml(p.mcpNum)}</div></div>
+        <div class="meta-item"><div class="meta-label">MCP Name</div><div class="meta-value">${escHtml(p.mcpName)}</div></div>
+        <div class="meta-item"><div class="meta-label">Assignee</div><div class="meta-value">${escHtml(p.assignee)}</div></div>
+        <div class="meta-item"><div class="meta-label">Assignment Date</div><div class="meta-value">${escHtml(p.assignmentDate)}</div></div>
+        <div class="meta-item">
+          <div class="meta-label">Progress</div>
+          <div class="meta-value" style="display:flex;align-items:center;gap:8px">
+            <div class="progress-bar" style="max-width:80px"><div class="progress-fill" style="width:${total?Math.round((done/total)*100):0}%"></div></div>
+            ${done} / ${total}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><span class="card-title">Tasks</span></div>
+      <div class="task-col-header">
+        <div></div>
+        <div class="task-col-label">Task</div>
+        <div class="task-col-label">Status</div>
+        <div class="task-col-label">Completion Date</div>
+      </div>
+      ${taskRows}
+    </div>`;
+}
+
+function handleTaskStatus(projectId, taskId, select) {
+  statusSelectStyle(select);
+  updateTask(projectId, taskId, { status: select.value });
+  // Refresh progress in detail header without full re-render
+  const p = getProject(projectId);
+  const { done, total } = progressText(p);
+  const pct = total ? Math.round((done / total) * 100) : 0;
+  document.querySelectorAll('.progress-fill').forEach(el => el.style.width = pct + '%');
+  document.querySelectorAll('.meta-value').forEach(el => {
+    if (el.textContent.trim().match(/^\d+ \/ \d+$/)) el.innerHTML = `${done} / ${total}`;
+  });
+}
+
+function handleTaskDate(projectId, taskId, value) {
+  updateTask(projectId, taskId, { completionDate: value });
+}
+
+function showCloseConfirm(projectId) {
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.innerHTML = `
+    <div class="modal">
+      <div class="modal-header"><div class="modal-title">Close Project?</div></div>
+      <div class="confirm-body">
+        This will mark the project as <strong>Closed</strong> and move it out of the open projects list.
+        You can still view it in the Closed Projects tab. This action cannot be undone.
+      </div>
+      <div class="confirm-actions">
+        <button class="btn btn-ghost" onclick="dismissModal()">Cancel</button>
+        <button class="btn btn-danger" onclick="confirmClose('${escHtml(projectId)}')">Close Project</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+}
+
+function dismissModal() {
+  document.querySelector('.modal-overlay')?.remove();
+}
+
+function confirmClose(projectId) {
+  dismissModal();
+  closeProject(projectId);
+  navigate('home');
+}
+
+// ─────────────────────────────────────────────
+//  RENDER
+// ─────────────────────────────────────────────
+function render() {
+  const app = document.getElementById('app');
+  let html = '';
+  if (currentView === 'home')    html = renderHome();
+  else if (currentView === 'create') html = renderCreate();
+  else if (currentView === 'detail') html = renderDetail();
+  app.innerHTML = html;
+
+  // Apply select colors after render
+  document.querySelectorAll('.task-select').forEach(statusSelectStyle);
+}
+
+// ─────────────────────────────────────────────
+//  BOOT
+// ─────────────────────────────────────────────
+render();
+</script>
+</body>
+</html>
