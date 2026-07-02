@@ -612,6 +612,179 @@
       background: var(--surface); outline: none; font-family: inherit;
     }
 
+    /* ── View switcher ── */
+    .view-switch {
+      display: flex; gap: 2px;
+      background: var(--border);
+      border-radius: var(--radius);
+      padding: 3px;
+    }
+    .view-switch button {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 6px 14px; border: none; border-radius: 6px;
+      background: transparent; color: var(--text-muted);
+      font-size: 13px; font-weight: 500; font-family: inherit;
+      cursor: pointer; transition: background .15s, color .15s;
+      white-space: nowrap;
+    }
+    .view-switch button svg { width: 14px; height: 14px; flex-shrink: 0; }
+    .view-switch button:hover { color: var(--text); }
+    .view-switch button.active { background: var(--surface); color: var(--text); font-weight: 600; box-shadow: var(--shadow); }
+
+    /* ── Kanban filter bar ── */
+    .kb-filterbar {
+      position: sticky; top: 56px; z-index: 40;
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+      padding: 12px 16px; margin-bottom: 16px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+    }
+    .kb-filter-label {
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .6px; color: var(--text-muted);
+    }
+    .ms-dd { position: relative; }
+    .ms-btn {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 6px 12px;
+      border: 1px solid var(--border-strong); border-radius: var(--radius);
+      background: var(--surface); color: var(--text-muted);
+      font-size: 12px; font-weight: 500; font-family: inherit;
+      cursor: pointer; transition: border-color .15s, color .15s, background .15s;
+    }
+    .ms-btn:hover { border-color: var(--accent); color: var(--text); }
+    .ms-btn.has-sel { border-color: var(--accent); color: var(--accent); background: var(--accent-light); font-weight: 600; }
+    .ms-count {
+      background: var(--accent); color: #fff;
+      font-size: 10px; font-weight: 700;
+      min-width: 16px; height: 16px; padding: 0 4px;
+      border-radius: 99px;
+      display: inline-flex; align-items: center; justify-content: center;
+    }
+    .ms-caret { font-size: 9px; opacity: .7; }
+    .ms-panel {
+      position: absolute; top: calc(100% + 6px); left: 0;
+      min-width: 200px; max-height: 280px; overflow-y: auto;
+      background: var(--surface);
+      border: 1px solid var(--border-strong); border-radius: var(--radius);
+      box-shadow: var(--shadow-md);
+      padding: 5px; z-index: 60;
+    }
+    .ms-opt {
+      display: flex; align-items: center; gap: 9px;
+      padding: 7px 10px; border-radius: 6px;
+      font-size: 13px; font-weight: 400; color: var(--text);
+      text-transform: none; letter-spacing: 0;
+      cursor: pointer; white-space: nowrap;
+    }
+    .ms-opt:hover { background: var(--bg); }
+    .ms-opt input { accent-color: var(--accent); cursor: pointer; }
+    .ms-empty { padding: 10px 12px; font-size: 12px; color: var(--text-muted); }
+
+    /* ── Kanban board ── */
+    .kb-board-wrap { overflow-x: auto; padding-bottom: 10px; }
+    .kb-board { display: flex; gap: 14px; align-items: flex-start; min-height: 280px; }
+    .kb-col {
+      flex: 0 0 282px; width: 282px;
+      background: #f1f5f9;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      display: flex; flex-direction: column;
+      max-height: calc(100vh - 240px);
+      min-height: 150px;
+    }
+    .kb-col-head {
+      padding: 11px 14px;
+      display: flex; align-items: center; gap: 8px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .kb-col-title {
+      font-size: 11.5px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .6px; color: var(--text-muted);
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .kb-col-count {
+      margin-left: auto;
+      background: var(--surface); color: var(--text-muted);
+      border: 1px solid var(--border-strong);
+      font-size: 11px; font-weight: 700;
+      min-width: 22px; height: 20px; padding: 0 6px;
+      border-radius: 99px;
+      display: inline-flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .kb-col-body {
+      flex: 1; overflow-y: auto;
+      padding: 10px;
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .kb-col-empty {
+      text-align: center; color: var(--text-light);
+      font-size: 12px; padding: 22px 0;
+      border: 1px dashed var(--border-strong); border-radius: var(--radius);
+    }
+    .kb-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 12px 14px;
+      cursor: pointer;
+      transition: box-shadow .15s, transform .15s, border-color .15s;
+      animation: cardIn .25s ease;
+    }
+    .kb-card:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); border-color: var(--border-strong); }
+    @keyframes cardIn { from { opacity: 0; transform: translateY(6px) scale(.98); } to { opacity: 1; transform: none; } }
+    .kb-card.card-moved { animation: cardMoved .9s ease; }
+    @keyframes cardMoved {
+      0% { box-shadow: 0 0 0 3px rgba(37,99,235,.5); transform: scale(1.02); }
+      100% { box-shadow: var(--shadow); transform: none; }
+    }
+    .kb-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+    .kb-id { font-size: 12px; font-weight: 700; color: var(--accent); }
+    .kb-kebab {
+      width: 26px; height: 26px; margin: -4px -6px 0 0;
+      border: none; border-radius: 6px;
+      background: transparent; color: var(--text-muted);
+      font-size: 16px; line-height: 1; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background .12s, color .12s;
+      flex-shrink: 0;
+    }
+    .kb-kebab:hover { background: var(--bg); color: var(--text); }
+    .kb-mcp { font-size: 14px; font-weight: 600; margin-top: 3px; line-height: 1.35; }
+    .kb-mcp-num { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
+    .kb-assignee {
+      display: flex; align-items: center; gap: 7px;
+      font-size: 12px; color: var(--text-muted);
+      margin-top: 8px;
+    }
+    .kb-avatar {
+      width: 20px; height: 20px; border-radius: 50%;
+      background: var(--accent-light); color: var(--accent);
+      font-size: 9px; font-weight: 700;
+      display: inline-flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .kb-badges { display: flex; gap: 6px; flex-wrap: wrap; margin: 9px 0; }
+    .kb-progress .progress-bar { max-width: none; }
+    .upd-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 3px 9px; border-radius: 99px;
+      font-size: 11px; font-weight: 600; white-space: nowrap;
+    }
+    .upd-green  { background: #ecfdf5; color: #047857; }
+    .upd-yellow { background: #fffbeb; color: #b45309; }
+    .upd-red    { background: #fef2f2; color: #b91c1c; }
+
+    @media (max-width: 900px) {
+      .kb-col { flex: 0 0 250px; width: 250px; }
+      .kb-filterbar { top: 0; }
+    }
+
     /* ── Utility ── */
     .hidden { display: none !important; }
     .text-muted { color: var(--text-muted); }
@@ -1199,6 +1372,44 @@ let currentTemplateId = null;
 let projectFilter = { status: '', rag: '', search: '' };
 let tplDraft = null; // in-memory template being edited
 
+// ── Projects page UI state (view mode + kanban filters), kept for the session ──
+const UI_STATE_KEY = 'cat_ui_state_v1';
+let projectViewMode = 'list'; // 'list' | 'kanban' | 'timecard'
+let kanbanFilter = { assignee: [], status: [], rag: [], age: [] };
+let movedProjectId = null; // card to highlight on the render right after a save
+
+function loadUiState() {
+  try {
+    const s = JSON.parse(sessionStorage.getItem(UI_STATE_KEY));
+    if (!s) return;
+    if (['list', 'kanban', 'timecard'].includes(s.viewMode)) projectViewMode = s.viewMode;
+    if (s.kanbanFilter) kanbanFilter = { assignee: [], status: [], rag: [], age: [], ...s.kanbanFilter };
+    if (s.projectFilter) projectFilter = { status: '', rag: '', search: '', ...s.projectFilter };
+  } catch {}
+}
+function saveUiState() {
+  try {
+    sessionStorage.setItem(UI_STATE_KEY, JSON.stringify({ viewMode: projectViewMode, kanbanFilter, projectFilter }));
+  } catch {}
+}
+
+// ── Days since update ──
+function daysSinceUpdate(p) {
+  return Math.max(0, Math.floor((Date.now() - lastActivityTs(p)) / 86400000));
+}
+const AGE_BUCKETS = [
+  { key: 'fresh', label: 'Fresh — updated 0–7 days ago',  cls: 'upd-green' },
+  { key: 'aging', label: 'Aging — updated 8–14 days ago', cls: 'upd-yellow' },
+  { key: 'stale', label: 'Stale — updated 15+ days ago',  cls: 'upd-red' },
+];
+function ageBucketKey(days) { return days <= 7 ? 'fresh' : days <= 14 ? 'aging' : 'stale'; }
+function updatedBadge(p) {
+  const days = daysSinceUpdate(p);
+  const cls = AGE_BUCKETS.find(b => b.key === ageBucketKey(days)).cls;
+  const label = days === 0 ? 'Today' : days === 1 ? '1 day ago' : `${days} days ago`;
+  return `<span class="upd-badge ${cls}" title="Days since last update">Updated: ${label}</span>`;
+}
+
 function navigate(view, id) {
   currentView = view;
   if (view === 'detail') currentProjectId = id;
@@ -1272,9 +1483,52 @@ function modalError(msg) {
 }
 
 // ─────────────────────────────────────────────
-//  VIEW: PROJECTS LIST
+//  VIEW: PROJECTS (List / Kanban / Timecard)
 // ─────────────────────────────────────────────
+const VIEW_ICONS = {
+  list: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="2.5" y1="4" x2="13.5" y2="4"/><line x1="2.5" y1="8" x2="13.5" y2="8"/><line x1="2.5" y1="12" x2="13.5" y2="12"/></svg>',
+  kanban: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1.5" y="2" width="3.6" height="12" rx="1"/><rect x="6.2" y="2" width="3.6" height="8.5" rx="1"/><rect x="10.9" y="2" width="3.6" height="5.5" rx="1"/></svg>',
+  timecard: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="8" cy="8" r="6"/><path d="M8 4.8V8l2.4 1.5"/></svg>',
+};
+const PROJECT_VIEWS = [
+  { key: 'list',     label: 'List' },
+  { key: 'kanban',   label: 'Kanban' },
+  { key: 'timecard', label: 'Timecard' },
+];
+
+function setProjectViewMode(mode) {
+  projectViewMode = mode;
+  render();
+}
+
 function renderProjects() {
+  const switcher = `
+    <div class="view-switch" role="tablist" aria-label="Project view">
+      ${PROJECT_VIEWS.map(v => `
+        <button class="${projectViewMode === v.key ? 'active' : ''}" role="tab"
+          aria-selected="${projectViewMode === v.key}"
+          onclick="setProjectViewMode('${v.key}')" title="${v.label} view">
+          ${VIEW_ICONS[v.key]}${v.label}
+        </button>`).join('')}
+    </div>`;
+
+  const body = projectViewMode === 'kanban' ? renderKanban()
+    : projectViewMode === 'timecard' ? renderTimecardPlaceholder()
+    : renderProjectListView();
+
+  return `
+    <div class="card-header" style="margin-bottom:20px;background:transparent;border:none;padding:0;box-shadow:none">
+      <h1 style="font-size:20px;font-weight:700">Projects</h1>
+      <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+        ${switcher}
+        <button class="btn btn-primary" onclick="navigate('create')">+ Create Project</button>
+      </div>
+    </div>
+    ${body}`;
+}
+
+// ── List view ──
+function renderProjectListView() {
   const data = getData();
   let list = activeProjects(data);
 
@@ -1286,7 +1540,7 @@ function renderProjects() {
   }
 
   const rows = list.length === 0
-    ? `<tr class="empty-row"><td colspan="8">No active projects match.</td></tr>`
+    ? `<tr class="empty-row"><td colspan="9">No active projects match.</td></tr>`
     : list.map(p => {
         const { done, total } = progressText(p);
         const pct = total ? Math.round((done / total) * 100) : 0;
@@ -1305,14 +1559,11 @@ function renderProjects() {
                 <span class="progress-label">${done}/${total}</span>
               </div>
             </td>
+            <td>${updatedBadge(p)}</td>
           </tr>`;
       }).join('');
 
   return `
-    <div class="card-header" style="margin-bottom:20px;background:transparent;border:none;padding:0;box-shadow:none">
-      <h1 style="font-size:20px;font-weight:700">Active Projects</h1>
-      <button class="btn btn-primary" onclick="navigate('create')">+ Create Project</button>
-    </div>
     <div class="card">
       <div class="card-header">
         <div class="filter-bar">
@@ -1333,7 +1584,7 @@ function renderProjects() {
         <table>
           <thead><tr>
             <th>Project ID</th><th>MCP #</th><th>MCP Name</th><th>Assignee</th>
-            <th>Status</th><th>RAG</th><th>Age</th><th>Progress</th>
+            <th>Status</th><th>RAG</th><th>Age</th><th>Progress</th><th>Updated</th>
           </tr></thead>
           <tbody>${rows}</tbody>
         </table>
@@ -1347,6 +1598,369 @@ function refreshList(input) {
   render();
   const el = document.querySelector('.filter-bar input');
   if (el) { el.focus(); el.setSelectionRange(pos, pos); }
+}
+
+// ── Kanban view ──
+// Columns are generated from PROJECT_STATUSES, so adding/removing a status
+// automatically adds/removes a column.
+function mcpLabel(p) {
+  const num = String(p.mcpNum || '').trim();
+  return /^mcp/i.test(num) ? num : 'MCP-' + num;
+}
+
+function kanbanAssignees(data) {
+  const set = new Set();
+  activeProjects(data).forEach(p => set.add(p.assignee || 'Unassigned'));
+  return [...set].sort((a, b) => a.localeCompare(b));
+}
+
+function kanbanFilteredProjects(data) {
+  const f = kanbanFilter;
+  let list = activeProjects(data);
+  if (f.assignee.length) list = list.filter(p => f.assignee.includes(p.assignee || 'Unassigned'));
+  if (f.rag.length)      list = list.filter(p => f.rag.includes(effectiveRag(p) || ''));
+  if (f.age.length)      list = list.filter(p => f.age.includes(ageBucketKey(daysSinceUpdate(p))));
+  return list; // status filter is applied per-column
+}
+
+function kanbanHasFilters() {
+  const f = kanbanFilter;
+  return !!(f.assignee.length || f.status.length || f.rag.length || f.age.length);
+}
+
+const MS_LABELS = { assignee: 'Assignee', status: 'Status', rag: 'RAG', age: 'Age' };
+
+function msBtnInner(key) {
+  const n = kanbanFilter[key].length;
+  return `${MS_LABELS[key]}${n ? `<span class="ms-count">${n}</span>` : ''}<span class="ms-caret">▾</span>`;
+}
+
+function msDropdown(key, options) {
+  return `
+    <div class="ms-dd" data-mskey="${key}">
+      <button class="ms-btn ${kanbanFilter[key].length ? 'has-sel' : ''}" onclick="toggleMsPanel(event,'${key}')">${msBtnInner(key)}</button>
+      <div class="ms-panel hidden" id="msPanel-${key}">
+        ${options.length === 0 ? '<div class="ms-empty">No options</div>' : options.map(o => `
+          <label class="ms-opt">
+            <input type="checkbox" data-val="${escHtml(o.value)}" ${kanbanFilter[key].includes(o.value) ? 'checked' : ''} onchange="msToggle('${key}', this)" />
+            ${o.dot ? `<span class="rag-dot" style="background:${o.dot}"></span>` : ''}${escHtml(o.label)}
+          </label>`).join('')}
+      </div>
+    </div>`;
+}
+
+function toggleMsPanel(e, key) {
+  e.stopPropagation();
+  const panel = document.getElementById('msPanel-' + key);
+  const wasHidden = panel.classList.contains('hidden');
+  closeAllMsPanels();
+  if (wasHidden) panel.classList.remove('hidden');
+}
+function closeAllMsPanels() {
+  document.querySelectorAll('.ms-panel').forEach(p => p.classList.add('hidden'));
+}
+document.addEventListener('click', e => { if (!e.target.closest('.ms-dd')) closeAllMsPanels(); });
+
+// Toggle one filter value; refresh only the board so the dropdown stays open.
+function msToggle(key, cb) {
+  const val = cb.dataset.val;
+  const arr = kanbanFilter[key];
+  const i = arr.indexOf(val);
+  if (cb.checked && i === -1) arr.push(val);
+  if (!cb.checked && i !== -1) arr.splice(i, 1);
+  saveUiState();
+  refreshKanbanBoard();
+}
+
+function clearKanbanFilters() {
+  kanbanFilter = { assignee: [], status: [], rag: [], age: [] };
+  saveUiState();
+  render();
+}
+
+function refreshKanbanBoard() {
+  const wrap = document.getElementById('kbBoardWrap');
+  if (wrap) wrap.outerHTML = renderKanbanBoard();
+  document.querySelectorAll('.ms-dd').forEach(dd => {
+    const key = dd.dataset.mskey;
+    const btn = dd.querySelector('.ms-btn');
+    btn.innerHTML = msBtnInner(key);
+    btn.classList.toggle('has-sel', kanbanFilter[key].length > 0);
+  });
+  const clearBtn = document.getElementById('kbClearBtn');
+  if (clearBtn) clearBtn.disabled = !kanbanHasFilters();
+  const summary = document.getElementById('kbSummary');
+  if (summary) summary.textContent = kanbanSummaryText();
+}
+
+function kanbanSummaryText() {
+  const data = getData();
+  const total = activeProjects(data).length;
+  const shown = kanbanFilteredProjects(data).filter(p =>
+    !kanbanFilter.status.length || kanbanFilter.status.includes(p.status)).length;
+  return shown === total ? `${total} project${total !== 1 ? 's' : ''}` : `${shown} of ${total} projects`;
+}
+
+function renderKanban() {
+  const data = getData();
+  const ragDots = { Red: 'var(--viz-critical)', Amber: 'var(--viz-warning)', Green: 'var(--viz-good)' };
+  const filterBar = `
+    <div class="kb-filterbar">
+      <span class="kb-filter-label">Filters</span>
+      ${msDropdown('assignee', kanbanAssignees(data).map(a => ({ value: a, label: a })))}
+      ${msDropdown('status', PROJECT_STATUSES.map(s => ({ value: s, label: s })))}
+      ${msDropdown('rag', ['Red', 'Amber', 'Green'].map(r => ({ value: r, label: r, dot: ragDots[r] })))}
+      ${msDropdown('age', AGE_BUCKETS.map(b => ({ value: b.key, label: b.label })))}
+      <button class="btn btn-ghost btn-sm" id="kbClearBtn" onclick="clearKanbanFilters()" ${kanbanHasFilters() ? '' : 'disabled'}>Clear All</button>
+      <span class="text-muted" style="font-size:12px;margin-left:auto" id="kbSummary">${kanbanSummaryText()}</span>
+    </div>`;
+  return filterBar + renderKanbanBoard();
+}
+
+function renderKanbanBoard() {
+  const data = getData();
+  const list = kanbanFilteredProjects(data);
+  const statuses = kanbanFilter.status.length
+    ? PROJECT_STATUSES.filter(s => kanbanFilter.status.includes(s))
+    : PROJECT_STATUSES;
+
+  const cols = statuses.map(s => {
+    const items = list.filter(p => p.status === s);
+    return `
+      <div class="kb-col">
+        <div class="kb-col-head">
+          <span class="kb-col-title" title="${escHtml(s)}">${escHtml(s)}</span>
+          <span class="kb-col-count">${items.length}</span>
+        </div>
+        <div class="kb-col-body">
+          ${items.map(kbCard).join('') || '<div class="kb-col-empty">No projects</div>'}
+        </div>
+      </div>`;
+  }).join('');
+
+  return `<div class="kb-board-wrap" id="kbBoardWrap"><div class="kb-board">${cols}</div></div>`;
+}
+
+function kbCard(p) {
+  const { done, total } = progressText(p);
+  const pct = total ? Math.round((done / total) * 100) : 0;
+  const initials = (p.assignee || '?').trim().split(/\s+/).map(w => w[0]).join('').slice(0, 2).toUpperCase();
+  return `
+    <div class="kb-card${p.id === movedProjectId ? ' card-moved' : ''}" data-pid="${escHtml(p.id)}"
+      onclick="navigate('detail', this.dataset.pid)" title="Open project details">
+      <div class="kb-card-top">
+        <span class="kb-id">${escHtml(p.id)}</span>
+        <button class="kb-kebab" data-pid="${escHtml(p.id)}" title="Edit project"
+          onclick="event.stopPropagation(); openEditDrawer(this.dataset.pid)">⋮</button>
+      </div>
+      <div class="kb-mcp">${escHtml(p.mcpName)}</div>
+      <div class="kb-mcp-num">${escHtml(mcpLabel(p))}</div>
+      <div class="kb-assignee"><span class="kb-avatar">${escHtml(initials)}</span>${escHtml(p.assignee || 'Unassigned')}</div>
+      <div class="kb-badges">${projectBadge(p.status)}${ragChip(p)}</div>
+      <div class="progress-wrap kb-progress" title="${done} of ${total} tasks completed">
+        <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+        <span class="progress-label">${done}/${total}</span>
+      </div>
+      <div style="margin-top:9px">${updatedBadge(p)}</div>
+    </div>`;
+}
+
+// ── Timecard view (placeholder for future development) ──
+function renderTimecardPlaceholder() {
+  return `
+    <div class="card" style="padding:64px 24px;text-align:center">
+      <div style="width:52px;height:52px;margin:0 auto 14px;border-radius:50%;background:var(--accent-light);color:var(--accent);display:flex;align-items:center;justify-content:center">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" style="width:26px;height:26px"><circle cx="8" cy="8" r="6"/><path d="M8 4.8V8l2.4 1.5"/></svg>
+      </div>
+      <div style="font-size:17px;font-weight:600;margin-bottom:6px">Timecard View</div>
+      <div class="text-muted" style="max-width:440px;margin:0 auto;font-size:13.5px;line-height:1.7">
+        Coming soon — a cross-project rollup of logged time by person, project and activity type.
+        Until then, time can be logged and reviewed on each project's detail page.
+      </div>
+    </div>`;
+}
+
+// ─────────────────────────────────────────────
+//  KANBAN: EDIT PROJECT DRAWER
+// ─────────────────────────────────────────────
+let editDrawerProjectId = null;
+
+function openEditDrawer(projectId) {
+  const p = getProject(projectId);
+  if (!p || isTerminal(p)) return;
+  closeDrawer();
+  editDrawerProjectId = projectId;
+
+  const { done, total } = progressText(p);
+
+  const overlay = document.createElement('div');
+  overlay.className = 'drawer-overlay';
+  overlay.id = 'drawerOverlay';
+  overlay.addEventListener('click', e => { if (e.target === overlay) closeDrawer(); });
+
+  const drawer = document.createElement('div');
+  drawer.className = 'drawer';
+  drawer.addEventListener('click', e => e.stopPropagation());
+
+  drawer.innerHTML = `
+    <div class="drawer-header">
+      <div style="min-width:0">
+        <div class="drawer-title-sub">Edit Project</div>
+        <div class="drawer-title">${escHtml(p.id)} · ${escHtml(p.mcpName)}</div>
+      </div>
+      <button class="drawer-close" onclick="closeDrawer()" title="Close">✕</button>
+    </div>
+    <div class="drawer-body" style="gap:18px">
+      <div class="form-error hidden" id="editError" style="margin:0"></div>
+      <div class="form-group"><label>Project ID</label><input type="text" id="e_id" value="${escHtml(p.id)}" /></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+        <div class="form-group"><label>MCP Number</label><input type="text" id="e_mcpNum" value="${escHtml(p.mcpNum)}" /></div>
+        <div class="form-group"><label>MCP Name</label><input type="text" id="e_mcpName" value="${escHtml(p.mcpName)}" /></div>
+      </div>
+      <div class="form-group"><label>Assignee</label><input type="text" id="e_assignee" value="${escHtml(p.assignee)}" /></div>
+      <div class="form-group"><label>Status</label><select id="e_status">${selOptions(PROJECT_STATUSES, p.status)}</select></div>
+      <div class="form-group">
+        <label>RAG Status</label>
+        <select id="e_rag">
+          <option value="" ${p.ragOverride ? '' : 'selected'}>Auto — currently ${calcRag(p) || '—'}</option>
+          ${['Red', 'Amber', 'Green'].map(r => `<option value="${r}" ${p.ragOverride && p.ragOverride.value === r ? 'selected' : ''}>${r} (manual override)</option>`).join('')}
+        </select>
+        <span class="text-muted" style="font-size:11px">Auto is calculated from blockers, overdue tasks and staleness. Picking a value sets a manual override until cleared.</span>
+      </div>
+      <div class="form-group">
+        <label>Progress — completed tasks</label>
+        <div style="display:flex;align-items:center;gap:10px">
+          <input type="number" id="e_progress" min="0" max="${total}" value="${done}" style="width:90px" />
+          <span class="text-muted" style="font-size:13px">of ${total} tasks</span>
+        </div>
+        <span class="text-muted" style="font-size:11px">Increasing marks the next open tasks Complete; decreasing reopens the most recently completed ones.</span>
+      </div>
+      <div class="form-group">
+        <label>Project Age (days)</label>
+        <div style="display:flex;align-items:center;gap:10px">
+          <input type="number" id="e_age" min="0" value="${daysOpen(p)}" style="width:90px" />
+          <span class="text-muted" style="font-size:13px">assigned ${formatDateShort(p.assignmentDate)}</span>
+        </div>
+        <span class="text-muted" style="font-size:11px">Changing the age adjusts the assignment date accordingly.</span>
+      </div>
+      <div style="display:flex;gap:10px;justify-content:flex-end;padding-top:2px">
+        <button class="btn btn-ghost" onclick="closeDrawer()">Cancel</button>
+        <button class="btn btn-primary" onclick="saveEditDrawer()">Save Changes</button>
+      </div>
+    </div>`;
+
+  overlay.appendChild(drawer);
+  document.body.appendChild(overlay);
+}
+
+function editDrawerError(msg) {
+  const el = document.getElementById('editError');
+  if (el) { el.textContent = msg; el.classList.remove('hidden'); }
+}
+
+function saveEditDrawer() {
+  const data = getData();
+  const p = findProject(data, editDrawerProjectId);
+  if (!p || isTerminal(p)) { closeDrawer(); return; }
+
+  const newId    = document.getElementById('e_id').value.trim();
+  const mcpNum   = document.getElementById('e_mcpNum').value.trim();
+  const mcpName  = document.getElementById('e_mcpName').value.trim();
+  const assignee = document.getElementById('e_assignee').value.trim();
+  const status   = document.getElementById('e_status').value;
+  const ragSel   = document.getElementById('e_rag').value; // '' = auto
+  const progress = Math.max(0, parseInt(document.getElementById('e_progress').value, 10) || 0);
+  const ageDays  = Math.max(0, parseInt(document.getElementById('e_age').value, 10) || 0);
+
+  if (!newId)   return editDrawerError('Project ID is required.');
+  if (!mcpNum)  return editDrawerError('MCP Number is required.');
+  if (!mcpName) return editDrawerError('MCP Name is required.');
+  if (newId.toLowerCase() !== p.id.toLowerCase()
+      && data.projects.some(x => x !== p && x.id.toLowerCase() === newId.toLowerCase()))
+    return editDrawerError(`Project ID ${newId} is already in use.`);
+  const dupMcp = activeProjects(data).find(x => x !== p && x.mcpNum.trim().toLowerCase() === mcpNum.toLowerCase());
+  if (dupMcp) return editDrawerError(`MCP ${mcpNum} already has an active project (${dupMcp.id}).`);
+
+  const user = currentUser();
+  const ts = Date.now();
+  const logChange = text => p.history.push({ type: 'activity', text: `${user} ${text}`, user, ts });
+
+  if (newId !== p.id) {
+    logChange(`changed Project ID from ${p.id} to ${newId}`);
+    if (currentProjectId === p.id) currentProjectId = newId;
+    p.id = newId;
+  }
+  if (mcpNum !== p.mcpNum)     { logChange(`changed MCP Number from ${p.mcpNum} to ${mcpNum}`); p.mcpNum = mcpNum; }
+  if (mcpName !== p.mcpName)   { logChange(`changed MCP Name from "${p.mcpName}" to "${mcpName}"`); p.mcpName = mcpName; }
+  if (assignee !== p.assignee) { logChange(`reassigned the project from ${p.assignee || '—'} to ${assignee || '—'}`); p.assignee = assignee; }
+
+  const before = progressText(p);
+  const target = Math.min(progress, before.total);
+  if (target !== before.done) {
+    applyProgressTarget(p, target, user, ts);
+    const after = progressText(p);
+    logChange(`updated progress from ${before.done}/${before.total} to ${after.done}/${after.total}`);
+  }
+
+  if (ageDays !== daysOpen(p)) {
+    const oldAge = daysOpen(p), oldDate = p.assignmentDate;
+    p.assignmentDate = addDaysISO(todayISO(), -ageDays);
+    // daysOpen rounds to the nearest day, so late in the day a date exactly
+    // N days back reads as N+1 — nudge forward so the entered age round-trips
+    if (daysOpen(p) > ageDays) p.assignmentDate = addDaysISO(p.assignmentDate, 1);
+    logChange(`changed project age from ${oldAge} to ${daysOpen(p)} days (assignment date ${oldDate || '—'} → ${p.assignmentDate})`);
+  }
+
+  if (status !== p.status) {
+    logChange(`changed project status from "${p.status}" to "${status}"`);
+    p.status = status;
+  }
+
+  const curOverride = p.ragOverride ? p.ragOverride.value : '';
+  if (ragSel !== curOverride) {
+    if (!ragSel) {
+      p.ragOverride = null;
+      logChange('cleared the manual RAG override (back to auto-calculated)');
+    } else {
+      p.ragOverride = { value: ragSel, reason: 'Set from the project edit drawer', by: user, ts };
+      logChange(`manually set RAG to ${ragSel} (from the project edit drawer)`);
+    }
+  }
+
+  saveData(data);
+  movedProjectId = p.id;
+  closeDrawer();
+  render();
+  movedProjectId = null; // highlight applies only to this refresh
+}
+
+// Marks the next open tasks Complete (in workflow order) to raise progress,
+// or reopens the most recently completed tasks to lower it. Skipped/Cancelled
+// tasks are never touched.
+function applyProgressTarget(p, target, user, ts) {
+  const ordered = [...p.tasks].sort((a, b) => a.order - b.order);
+  let done = ordered.filter(t => !OPEN_TASK(t.status)).length;
+  if (target > done) {
+    for (const t of ordered) {
+      if (done >= target) break;
+      if (!OPEN_TASK(t.status)) continue;
+      t.status = 'Complete';
+      t.completionDate = t.completionDate || todayISO();
+      t.completedBy = user;
+      t.history.push({ type: 'activity', text: `${user} marked the task Complete from the project edit drawer`, user, ts });
+      done++;
+    }
+  } else {
+    for (const t of [...ordered].reverse()) {
+      if (done <= target) break;
+      if (t.status !== 'Complete') continue;
+      t.status = 'Not Started';
+      t.completionDate = '';
+      t.completedBy = '';
+      t.history.push({ type: 'activity', text: `${user} reopened the task from the project edit drawer`, user, ts });
+      done--;
+    }
+  }
 }
 
 // ─────────────────────────────────────────────
@@ -2260,6 +2874,7 @@ function _openDrawer(ctx, title, subtitle, readOnly) {
 function closeDrawer() {
   document.getElementById('drawerOverlay')?.remove();
   drawerCtx = null;
+  editDrawerProjectId = null;
 }
 
 document.addEventListener('keydown', function(e) {
@@ -2382,12 +2997,14 @@ function render() {
   renderUserBox();
   document.querySelectorAll('.task-select').forEach(statusSelectStyle);
   if (currentView === 'create') renderTemplatePreview();
+  saveUiState(); // keep view + filter selections for the session
 }
 
 // ─────────────────────────────────────────────
 //  BOOT
 // ─────────────────────────────────────────────
 getData(); // ensure migration + seed
+loadUiState(); // restore view + filter selections for this session
 render();
 </script>
 </body>
