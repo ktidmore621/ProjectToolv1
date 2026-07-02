@@ -23,6 +23,15 @@
       --radius: 8px;
       --radius-lg: 12px;
 
+      /* Data-viz roles (reference palette) */
+      --viz-series: #2a78d6;
+      --viz-good: #0ca30c;
+      --viz-warning: #fab219;
+      --viz-serious: #ec835a;
+      --viz-critical: #d03b3b;
+      --viz-track: #eef1f5;
+      --viz-muted: #898781;
+
       --status-not-started-bg: #f1f5f9;
       --status-not-started-text: #475569;
       --status-in-progress-bg: #dbeafe;
@@ -54,18 +63,48 @@
       display: flex;
       align-items: center;
       height: 56px;
-      gap: 12px;
+      gap: 20px;
       box-shadow: var(--shadow);
+      position: sticky;
+      top: 0;
+      z-index: 50;
     }
     .app-header .logo {
       font-size: 16px;
       font-weight: 700;
       color: var(--accent);
       letter-spacing: -.3px;
+      white-space: nowrap;
     }
     .app-header .logo span { color: var(--text-muted); font-weight: 400; }
+    .app-nav { display: flex; gap: 4px; flex: 1; }
+    .nav-btn {
+      padding: 6px 14px;
+      border-radius: var(--radius);
+      font-size: 13px;
+      font-weight: 500;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: background .15s, color .15s;
+    }
+    .nav-btn:hover { background: var(--bg); color: var(--text); }
+    .nav-btn.active { background: var(--accent-light); color: var(--accent); font-weight: 600; }
+    .user-box { display: flex; align-items: center; gap: 8px; }
+    .user-box label { font-size: 10px; }
+    .user-box input, .user-box select {
+      padding: 5px 8px;
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius);
+      font-size: 12px;
+      font-family: inherit;
+      background: var(--surface);
+      outline: none;
+    }
+    .user-box input { width: 130px; }
 
-    .main { max-width: 1100px; margin: 0 auto; padding: 32px 24px; }
+    .main { max-width: 1180px; margin: 0 auto; padding: 32px 24px; }
 
     /* ── Cards ── */
     .card {
@@ -81,6 +120,7 @@
       align-items: center;
       justify-content: space-between;
       gap: 16px;
+      flex-wrap: wrap;
     }
     .card-title { font-size: 16px; font-weight: 600; }
     .card-body { padding: 0; }
@@ -101,6 +141,7 @@
       white-space: nowrap;
     }
     .btn:active { transform: translateY(1px); }
+    .btn:disabled { opacity: .5; cursor: not-allowed; }
     .btn-primary { background: var(--accent); color: #fff; }
     .btn-primary:hover { background: var(--accent-hover); box-shadow: 0 2px 8px rgba(37,99,235,.3); }
     .btn-ghost {
@@ -113,6 +154,7 @@
     .btn-danger:hover { background: #b91c1c; }
     .btn-success { background: #16a34a; color: #fff; }
     .btn-success:hover { background: #15803d; }
+    .btn-sm { padding: 5px 10px; font-size: 12px; }
 
     /* ── Tabs ── */
     .tabs {
@@ -148,6 +190,7 @@
       color: var(--text-muted);
       background: var(--bg);
       border-bottom: 1px solid var(--border);
+      white-space: nowrap;
     }
     tbody tr {
       border-bottom: 1px solid var(--border);
@@ -164,10 +207,11 @@
       font-size: 14px;
     }
 
-    /* ── Status badge ── */
+    /* ── Badges ── */
     .badge {
       display: inline-flex;
       align-items: center;
+      gap: 5px;
       padding: 3px 9px;
       border-radius: 99px;
       font-size: 11px;
@@ -180,8 +224,45 @@
     .badge-complete     { background: var(--status-complete-bg);      color: var(--status-complete-text); }
     .badge-skipped      { background: var(--status-skipped-bg);       color: var(--status-skipped-text); }
     .badge-cancelled    { background: var(--status-cancelled-bg);     color: var(--status-cancelled-text); }
-    .badge-open         { background: var(--status-in-progress-bg);   color: var(--status-in-progress-text); }
-    .badge-closed       { background: var(--status-complete-bg);      color: var(--status-complete-text); }
+
+    .badge-p-new                     { background: #f1f5f9; color: #475569; }
+    .badge-p-assigned                { background: #e0f2fe; color: #0369a1; }
+    .badge-p-in-progress             { background: #dbeafe; color: #1d4ed8; }
+    .badge-p-pending-customer        { background: #fef3c7; color: #b45309; }
+    .badge-p-pending-internal        { background: #fef3c7; color: #92400e; }
+    .badge-p-action-plan-needed      { background: #ffedd5; color: #c2410c; }
+    .badge-p-action-plan-in-progress { background: #ede9fe; color: #6d28d9; }
+    .badge-p-ready-to-close          { background: #d1fae5; color: #047857; }
+    .badge-p-closed                  { background: #dcfce7; color: #15803d; }
+    .badge-p-cancelled               { background: #f3f4f6; color: #6b7280; }
+
+    .rag-chip {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 3px 10px; border-radius: 99px;
+      font-size: 11px; font-weight: 700;
+    }
+    .rag-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .rag-green { background: #ecfdf5; color: #047857; }
+    .rag-green .rag-dot { background: var(--viz-good); }
+    .rag-amber { background: #fffbeb; color: #b45309; }
+    .rag-amber .rag-dot { background: var(--viz-warning); }
+    .rag-red { background: #fef2f2; color: #b91c1c; }
+    .rag-red .rag-dot { background: var(--viz-critical); }
+    .rag-manual { font-weight: 400; opacity: .75; font-size: 10px; }
+
+    .risk-low      { background: #f1f5f9; color: #475569; }
+    .risk-medium   { background: #fffbeb; color: #b45309; }
+    .risk-high     { background: #fff7ed; color: #c2410c; }
+    .risk-critical { background: #fef2f2; color: #b91c1c; }
+
+    .prio-chip { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .4px; padding: 1px 6px; border-radius: 4px; }
+    .prio-low    { background: #f1f5f9; color: #64748b; }
+    .prio-medium { background: #e0f2fe; color: #0369a1; }
+    .prio-high   { background: #fef2f2; color: #b91c1c; }
+
+    .req-star { color: var(--viz-critical); font-weight: 700; margin-left: 2px; }
+    .lock-ico { color: var(--text-light); font-size: 11px; }
+    .overdue-flag { color: var(--viz-critical); font-size: 11px; font-weight: 600; }
 
     /* ── Progress bar ── */
     .progress-wrap { display: flex; align-items: center; gap: 8px; }
@@ -202,7 +283,7 @@
     .form-group { display: flex; flex-direction: column; gap: 6px; }
     .form-group.full { grid-column: 1 / -1; }
     label { font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: .5px; }
-    input[type="text"], input[type="date"], select {
+    input[type="text"], input[type="date"], input[type="number"], select, textarea {
       padding: 9px 12px;
       border: 1px solid var(--border-strong);
       border-radius: var(--radius);
@@ -213,11 +294,17 @@
       transition: border-color .15s, box-shadow .15s;
       outline: none;
     }
-    input[type="text"]:focus, input[type="date"]:focus, select:focus {
+    textarea { resize: vertical; min-height: 80px; }
+    input:focus, select:focus, textarea:focus {
       border-color: var(--accent);
       box-shadow: 0 0 0 3px rgba(37,99,235,.12);
     }
     .form-actions { padding: 0 24px 24px; display: flex; gap: 10px; justify-content: flex-end; }
+    .form-error {
+      margin: 0 24px; padding: 10px 14px;
+      background: #fef2f2; border: 1px solid #fecaca; border-radius: var(--radius);
+      color: #b91c1c; font-size: 13px;
+    }
 
     /* ── Project detail ── */
     .detail-header {
@@ -230,18 +317,32 @@
     }
     .detail-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 20px; flex-wrap: wrap; }
     .detail-pid { font-size: 22px; font-weight: 700; letter-spacing: -.5px; }
-    .detail-actions { display: flex; gap: 10px; flex-wrap: wrap; }
-    .detail-meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; }
+    .detail-actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    .detail-meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px; }
     .meta-item { display: flex; flex-direction: column; gap: 4px; }
     .meta-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; color: var(--text-muted); }
     .meta-value { font-size: 14px; font-weight: 500; }
+    .meta-select {
+      padding: 5px 8px; border: 1px solid var(--border-strong);
+      border-radius: var(--radius); font-size: 13px; font-family: inherit;
+      background: var(--surface); outline: none; cursor: pointer;
+    }
+    .closed-banner {
+      margin-bottom: 20px; padding: 12px 18px;
+      border-radius: var(--radius-lg);
+      background: #f0fdf4; border: 1px solid #bbf7d0; color: #166534;
+      font-size: 13px; display: flex; align-items: center; gap: 10px;
+    }
+    .closed-banner.is-cancelled { background: #f9fafb; border-color: var(--border-strong); color: var(--text-muted); }
 
     /* ── Tasks ── */
-    .task-row { display: grid; grid-template-columns: 28px 1fr 170px 150px 96px; align-items: center; gap: 14px; padding: 12px 16px; border-bottom: 1px solid var(--border); transition: background .1s; }
+    .task-row { display: grid; grid-template-columns: 28px minmax(220px,1fr) 150px 140px 170px; align-items: center; gap: 14px; padding: 12px 16px; border-bottom: 1px solid var(--border); transition: background .1s; }
     .task-row:last-child { border-bottom: none; }
     .task-row:hover { background: var(--bg); }
     .task-num { width: 24px; height: 24px; border-radius: 50%; background: var(--border); color: var(--text-muted); font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .task-num.adhoc { background: var(--accent-light); color: var(--accent); }
     .task-name { font-size: 14px; }
+    .task-sub { font-size: 11px; color: var(--text-muted); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 2px; }
     .task-select {
       padding: 6px 10px;
       border: 1px solid var(--border-strong);
@@ -251,6 +352,7 @@
       cursor: pointer;
       background: var(--surface);
       outline: none;
+      width: 100%;
     }
     .task-date-input {
       padding: 6px 10px;
@@ -263,6 +365,7 @@
       width: 100%;
     }
     .task-date-input:focus, .task-select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(37,99,235,.12); }
+    .task-actions { display: flex; gap: 6px; justify-content: flex-end; }
     .btn-notes {
       padding: 5px 10px;
       font-size: 11px;
@@ -277,6 +380,7 @@
       display: inline-flex; align-items: center; gap: 4px;
     }
     .btn-notes:hover { background: var(--accent-light); color: var(--accent); border-color: var(--accent); }
+    .btn-notes.danger:hover { background: #fef2f2; color: #b91c1c; border-color: #fecaca; }
 
     /* ── Back link ── */
     .back-link {
@@ -299,6 +403,7 @@
       display: flex; align-items: center; justify-content: center;
       z-index: 100; padding: 24px;
       animation: fadeIn .15s ease;
+      overflow-y: auto;
     }
     .modal {
       background: var(--surface);
@@ -306,9 +411,18 @@
       box-shadow: var(--shadow-md);
       width: 100%; max-width: 520px;
       animation: slideUp .2s ease;
+      margin: auto;
     }
     .modal-header { padding: 20px 24px 16px; border-bottom: 1px solid var(--border); }
     .modal-title { font-size: 16px; font-weight: 600; }
+    .modal-body { padding: 20px 24px; display: flex; flex-direction: column; gap: 16px; }
+    .modal-body .form-group { gap: 6px; }
+    .modal-actions { padding: 0 24px 20px; display: flex; gap: 10px; justify-content: flex-end; }
+    .modal-error { color: #b91c1c; font-size: 13px; padding: 8px 12px; background: #fef2f2; border-radius: var(--radius); display: none; }
+    .checklist { display: flex; flex-direction: column; gap: 6px; font-size: 13px; }
+    .checklist-item { display: flex; align-items: center; gap: 8px; }
+    .check-ok { color: var(--viz-good); font-weight: 700; }
+    .check-bad { color: var(--viz-critical); font-weight: 700; }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     @keyframes slideUp { from { transform: translateY(12px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
     @keyframes slideInRight { from { transform: translateX(100%); } to { transform: translateX(0); } }
@@ -405,12 +519,15 @@
       pointer-events: none;
     }
     .rte-editor ul, .rte-editor ol { padding-left: 20px; }
-    .rte-actions { padding-top: 10px; }
+    .rte-actions { padding-top: 10px; display: flex; gap: 10px; align-items: center; }
+    .note-cat-select {
+      padding: 7px 10px; border: 1px solid var(--border-strong);
+      border-radius: var(--radius); font-size: 12px; font-family: inherit;
+      background: var(--surface); outline: none; cursor: pointer;
+    }
 
     /* ── History ── */
-    .history-divider {
-      display: flex; align-items: center; gap: 10px;
-    }
+    .history-divider { display: flex; align-items: center; gap: 10px; }
     .history-divider-label {
       font-size: 11px; font-weight: 700; text-transform: uppercase;
       letter-spacing: .6px; color: var(--text-muted); white-space: nowrap;
@@ -423,193 +540,702 @@
       padding: 11px 13px;
       background: var(--surface);
     }
-    .history-entry.is-activity {
-      background: var(--bg);
-      border-color: var(--border);
-    }
-    .history-entry-meta {
-      display: flex; align-items: center; gap: 7px; margin-bottom: 5px;
-    }
+    .history-entry.is-activity { background: var(--bg); border-color: var(--border); }
+    .history-entry-meta { display: flex; align-items: center; gap: 7px; margin-bottom: 5px; flex-wrap: wrap; }
     .history-tag {
       font-size: 10px; font-weight: 700; text-transform: uppercase;
       letter-spacing: .5px; padding: 1px 6px; border-radius: 99px;
       background: var(--border); color: var(--text-muted);
       border: 1px solid var(--border-strong); flex-shrink: 0;
     }
-    .history-ts {
-      font-size: 11px; color: var(--text-light);
-    }
-    .history-content-activity {
-      font-style: italic; color: var(--text-muted); font-size: 13px; line-height: 1.5;
-    }
-    .history-content-note {
-      font-size: 14px; line-height: 1.6; color: var(--text);
-    }
+    .history-tag.cat { background: var(--accent-light); color: var(--accent); border-color: #bfdbfe; }
+    .history-ts { font-size: 11px; color: var(--text-light); }
+    .history-user { font-size: 11px; color: var(--text-muted); font-weight: 600; }
+    .history-content-activity { font-style: italic; color: var(--text-muted); font-size: 13px; line-height: 1.5; }
+    .history-content-note { font-size: 14px; line-height: 1.6; color: var(--text); }
     .history-content-note ul, .history-content-note ol { padding-left: 20px; }
-    .history-empty {
-      color: var(--text-muted); font-size: 13px;
-      text-align: center; padding: 28px 0;
+    .history-empty { color: var(--text-muted); font-size: 13px; text-align: center; padding: 28px 0; }
+
+    /* ── Time log ── */
+    .time-summary { display: flex; gap: 24px; padding: 16px 24px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+    .time-stat { display: flex; flex-direction: column; gap: 2px; }
+    .time-stat-value { font-size: 18px; font-weight: 700; }
+    .time-stat-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: .5px; }
+
+    /* ── Dashboard ── */
+    .dash-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+    .stat-tile {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); box-shadow: var(--shadow);
+      padding: 18px 20px;
+    }
+    .stat-value { font-size: 28px; font-weight: 700; letter-spacing: -.5px; line-height: 1.2; }
+    .stat-label { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+    .stat-sub { font-size: 11px; color: var(--text-light); margin-top: 6px; }
+    .stat-alert .stat-value { color: var(--viz-critical); }
+    .dash-charts { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .dash-charts .card { padding: 0; }
+    .chart-body { padding: 18px 24px 22px; }
+    .bar-list { display: flex; flex-direction: column; gap: 10px; }
+    .bar-row { display: grid; grid-template-columns: 130px 1fr 52px; align-items: center; gap: 10px; }
+    .bar-label { font-size: 12px; color: var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: right; }
+    .bar-track { height: 10px; background: var(--viz-track); border-radius: 0 4px 4px 0; overflow: hidden; }
+    .bar-fill { height: 100%; background: var(--viz-series); border-radius: 0 4px 4px 0; min-width: 2px; }
+    .bar-value { font-size: 12px; font-weight: 600; color: var(--text); font-variant-numeric: tabular-nums; }
+    .col-chart { display: flex; align-items: flex-end; gap: 12px; height: 130px; padding-top: 18px; border-bottom: 1px solid var(--border-strong); }
+    .col-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; gap: 4px; min-width: 0; }
+    .col-bar { width: 100%; max-width: 34px; background: var(--viz-series); border-radius: 4px 4px 0 0; min-height: 2px; }
+    .col-bar.zero { background: var(--viz-track); }
+    .col-val { font-size: 11px; font-weight: 600; color: var(--text-muted); font-variant-numeric: tabular-nums; }
+    .col-labels { display: flex; gap: 12px; margin-top: 6px; }
+    .col-month { flex: 1; text-align: center; font-size: 11px; color: var(--viz-muted); min-width: 0; }
+    .chart-empty { color: var(--text-muted); font-size: 13px; text-align: center; padding: 32px 0; }
+
+    /* ── Template admin ── */
+    .tpl-task-row { display: grid; grid-template-columns: 28px 1fr 110px 110px 90px 90px; gap: 10px; align-items: center; padding: 10px 16px; border-bottom: 1px solid var(--border); }
+    .tpl-task-row:last-child { border-bottom: none; }
+    .tpl-task-row input, .tpl-task-row select { padding: 6px 9px; font-size: 12px; }
+    .tpl-move { display: flex; gap: 4px; }
+    .tpl-move button {
+      width: 24px; height: 24px; border: 1px solid var(--border-strong); background: var(--surface);
+      border-radius: 6px; cursor: pointer; color: var(--text-muted); font-size: 11px; line-height: 1;
+    }
+    .tpl-move button:hover { background: var(--bg); color: var(--text); }
+    .tpl-move button:disabled { opacity: .35; cursor: not-allowed; }
+    .default-tag { background: var(--accent-light); color: var(--accent); border: 1px solid #bfdbfe; }
+
+    /* ── Filter bar ── */
+    .filter-bar { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+    .filter-bar select, .filter-bar input {
+      padding: 6px 10px; font-size: 12px;
+      border: 1px solid var(--border-strong); border-radius: var(--radius);
+      background: var(--surface); outline: none; font-family: inherit;
     }
 
     /* ── Utility ── */
     .hidden { display: none !important; }
     .text-muted { color: var(--text-muted); }
     .fw-600 { font-weight: 600; }
-    .task-section-header { padding: 12px 16px 10px; background: var(--bg); border-bottom: 1px solid var(--border); }
+    .task-section-header { padding: 12px 16px 10px; background: var(--bg); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
     .task-section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .7px; color: var(--text-muted); }
-    .task-col-header { display: grid; grid-template-columns: 28px 1fr 170px 150px 96px; gap: 14px; padding: 8px 16px; background: var(--bg); border-bottom: 1px solid var(--border); }
+    .task-col-header { display: grid; grid-template-columns: 28px minmax(220px,1fr) 150px 140px 170px; gap: 14px; padding: 8px 16px; background: var(--bg); border-bottom: 1px solid var(--border); }
     .task-col-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; color: var(--text-muted); }
+
+    @media (max-width: 900px) {
+      .dash-grid { grid-template-columns: repeat(2, 1fr); }
+      .dash-charts { grid-template-columns: 1fr; }
+      .app-header { flex-wrap: wrap; height: auto; padding: 10px 16px; }
+    }
   </style>
 </head>
 <body>
 
 <header class="app-header">
   <div class="logo">Customer Assignment <span>Tracker</span></div>
+  <nav class="app-nav" id="mainNav"></nav>
+  <div class="user-box">
+    <input type="text" id="userNameInput" placeholder="Your name" title="Current user" onchange="setCurrentUser(this.value)" />
+    <select id="userRoleSelect" title="Role" onchange="setCurrentRole(this.value)">
+      <option value="user">User</option>
+      <option value="admin">Admin</option>
+    </select>
+  </div>
 </header>
 
 <main class="main" id="app"></main>
 
 <script>
 // ─────────────────────────────────────────────
+//  CONSTANTS
+// ─────────────────────────────────────────────
+const STORAGE_KEY = 'cat_data_v2';
+const LEGACY_KEY  = 'cat_data_v1';
+
+const TASK_STATUSES = ['Not Started', 'In Progress', 'Blocked', 'Complete', 'Skipped', 'Cancelled'];
+const OPEN_TASK = s => !['Complete', 'Skipped', 'Cancelled'].includes(s);
+
+const PROJECT_STATUSES = [
+  'New', 'Assigned', 'In Progress', 'Pending Customer', 'Pending Internal',
+  'Action Plan Needed', 'Action Plan In Progress', 'Ready to Close',
+];
+const TERMINAL_STATUSES = ['Closed', 'Cancelled'];
+
+const CLOSE_REASONS = [
+  'Billing Improved', 'Issue Resolved', 'No Further Action Needed',
+  'Customer Unresponsive', 'Transferred / Escalated',
+];
+const ACTIVITY_TYPES = [
+  'Billing Analysis', 'Customer Visit', 'Internal Review', 'Action Plan Work',
+  'Follow-Up', 'Documentation', 'Administrative',
+];
+const NOTE_CATEGORIES = [
+  'General Update', 'Customer Contact', 'Billing Finding', 'Internal Follow-Up',
+  'Risk', 'Issue', 'Action Plan', 'Resolution',
+];
+const RISK_LEVELS = ['Low', 'Medium', 'High', 'Critical'];
+const PRIORITIES = ['Low', 'Medium', 'High'];
+
+const DEFAULT_TEMPLATE_TASKS = [
+  { name: 'Review customer billing history',    required: true,  priority: 'High',   dueOffsetDays: 3,  description: 'Pull and review the customer’s billing history for anomalies.' },
+  { name: 'Complete billing analysis',          required: true,  priority: 'High',   dueOffsetDays: 7,  description: 'Full billing analysis for the assignment period.' },
+  { name: 'Schedule / complete customer visit', required: false, priority: 'Medium', dueOffsetDays: 14, description: 'Visit the customer if the assignment calls for it.' },
+  { name: 'Identify billing concerns',          required: true,  priority: 'High',   dueOffsetDays: 14, description: 'Document all billing concerns found during analysis and visit.' },
+  { name: 'Determine if action plan is needed', required: true,  priority: 'Medium', dueOffsetDays: 16, description: 'Decision task: if Yes, add action plan tasks to the project.' },
+  { name: 'Create action plan tasks',           required: false, priority: 'Medium', dueOffsetDays: 18, description: 'Only if an action plan is needed — add the ad-hoc action plan tasks.' },
+  { name: 'Complete action plan follow-up',     required: false, priority: 'Medium', dueOffsetDays: 30, description: 'Follow up on all action plan items until resolved.' },
+  { name: 'Final review',                       required: true,  priority: 'Medium', dueOffsetDays: 35, description: 'Verify the customer is in a better billing position than at the start.' },
+  { name: 'Close project',                      required: true,  priority: 'Medium', dueOffsetDays: 40, description: 'Enter final summary and formally close the assignment.' },
+];
+
+// ─────────────────────────────────────────────
 //  DATA LAYER
 // ─────────────────────────────────────────────
-const STORAGE_KEY = 'cat_data_v1';
-const TASK_TEMPLATES = [
-  'Review customer billing history',
-  'Complete billing analysis',
-  'Schedule / complete customer visit',
-  'Identify billing concerns',
-  'Determine if action plan is needed',
-  'Create action plan tasks',
-  'Complete action plan follow-up',
-  'Final review',
-  'Close project',
-];
-const TASK_STATUSES = ['Not Started', 'In Progress', 'Blocked', 'Complete', 'Skipped', 'Cancelled'];
+function emptyData() {
+  return {
+    version: 2,
+    nextProjectId: 1,
+    nextTemplateId: 1,
+    settings: { currentUser: '', role: 'user' },
+    templates: [],
+    projects: [],
+  };
+}
 
 function loadData() {
-  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || { projects: [], nextId: 1 }; }
-  catch { return { projects: [], nextId: 1 }; }
+  try {
+    const raw = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    if (raw && raw.version === 2) return raw;
+  } catch {}
+  return null;
 }
+
 function saveData(data) { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
 
 function getData() {
-  const data = loadData();
-  // Migrate: ensure history arrays exist on all projects and tasks
-  data.projects.forEach(p => {
-    if (!p.history) p.history = [];
-    p.tasks.forEach(t => { if (!t.history) t.history = []; });
-  });
+  let data = loadData();
+  if (!data) {
+    data = emptyData();
+    migrateLegacy(data);
+    saveData(data);
+  }
+  seedDefaultTemplate(data);
   return data;
 }
 
-function padId(n) { return 'PRJ-' + String(n).padStart(4, '0'); }
+function seedDefaultTemplate(data) {
+  if (data.templates.length > 0) return;
+  const id = 'TPL-' + data.nextTemplateId++;
+  data.templates.push({
+    id,
+    name: 'Standard Customer Assignment',
+    description: 'Default workflow for customer assignment projects: billing review, analysis, visit, action plan decision, follow-up and closure.',
+    isDefault: true,
+    isActive: true,
+    createdBy: 'System',
+    createdDate: Date.now(),
+    tasks: DEFAULT_TEMPLATE_TASKS.map((t, i) => ({ id: i + 1, order: i + 1, ...t })),
+  });
+  saveData(data);
+}
 
-function createProject({ mcpNum, mcpName, assignee, assignmentDate }) {
+// One-time migration of v1 data (flat task list, Open/Closed statuses).
+function migrateLegacy(data) {
+  let legacy = null;
+  try { legacy = JSON.parse(localStorage.getItem(LEGACY_KEY)); } catch {}
+  if (!legacy || !Array.isArray(legacy.projects)) return;
+  data.nextProjectId = legacy.nextId || 1;
+  legacy.projects.forEach(op => {
+    data.projects.push({
+      id: op.id,
+      mcpNum: op.mcpNum, mcpName: op.mcpName,
+      assignee: op.assignee, assignmentDate: op.assignmentDate,
+      templateId: null, templateName: 'Legacy (pre-templates)',
+      status: op.status === 'Closed' ? 'Closed' : 'In Progress',
+      riskLevel: 'Low',
+      ragOverride: null,
+      createdDate: (op.history && op.history[0] && op.history[0].ts) || Date.now(),
+      createdBy: op.assignee || '',
+      closedDate: op.status === 'Closed' ? Date.now() : null,
+      closedBy: '', closeReason: '', finalSummary: '', cancelReason: '',
+      nextTaskId: (op.tasks ? op.tasks.length : 0) + 1,
+      nextLogId: 1,
+      tasks: (op.tasks || []).map((t, i) => ({
+        id: t.id, name: t.name, description: '',
+        order: i + 1, required: true, isAdHoc: false,
+        status: t.status, priority: 'Medium',
+        dueDate: '', assignedTo: op.assignee || '',
+        completionDate: t.completionDate || '', completedBy: '',
+        skipReason: '', history: t.history || [],
+      })),
+      timeLogs: [],
+      history: op.history || [],
+    });
+  });
+}
+
+// ─────────────────────────────────────────────
+//  SETTINGS / USERS
+// ─────────────────────────────────────────────
+function currentUser() {
+  const d = getData();
+  return d.settings.currentUser.trim() || 'Unknown user';
+}
+function isAdmin() { return getData().settings.role === 'admin'; }
+
+function setCurrentUser(name) {
+  const d = getData();
+  d.settings.currentUser = name.trim();
+  saveData(d);
+}
+function setCurrentRole(role) {
+  const d = getData();
+  d.settings.role = role;
+  saveData(d);
+  if (currentView === 'templates' || currentView === 'templateEdit') navigate('projects');
+  else render();
+}
+
+// ─────────────────────────────────────────────
+//  TEMPLATES
+// ─────────────────────────────────────────────
+function getTemplate(data, id) { return data.templates.find(t => t.id === id) || null; }
+function activeTemplates(data) { return data.templates.filter(t => t.isActive); }
+function defaultTemplate(data) {
+  return data.templates.find(t => t.isDefault && t.isActive) || activeTemplates(data)[0] || null;
+}
+
+function setDefaultTemplate(id) {
+  const d = getData();
+  d.templates.forEach(t => t.isDefault = (t.id === id));
+  saveData(d);
+  render();
+}
+function toggleTemplateActive(id) {
+  const d = getData();
+  const t = getTemplate(d, id);
+  if (!t) return;
+  if (t.isActive && t.isDefault) { alert('Set another template as default before deactivating this one.'); return; }
+  t.isActive = !t.isActive;
+  saveData(d);
+  render();
+}
+
+// ─────────────────────────────────────────────
+//  PROJECTS
+// ─────────────────────────────────────────────
+function padId(n) { return 'PRJ-' + String(n).padStart(4, '0'); }
+function findProject(data, id) { return data.projects.find(p => p.id === id) || null; }
+function getProject(id) { return findProject(getData(), id); }
+function isTerminal(p) { return TERMINAL_STATUSES.includes(p.status); }
+function activeProjects(data) { return data.projects.filter(p => !isTerminal(p)); }
+function historicalProjects(data) { return data.projects.filter(p => isTerminal(p)); }
+
+function activityEntry(text) {
+  return { type: 'activity', text, user: currentUser(), ts: Date.now() };
+}
+
+function addDaysISO(dateStr, days) {
+  const [y, m, d] = dateStr.split('-').map(Number);
+  const dt = new Date(y, m - 1, d + days);
+  const mm = String(dt.getMonth() + 1).padStart(2, '0');
+  const dd = String(dt.getDate()).padStart(2, '0');
+  return `${dt.getFullYear()}-${mm}-${dd}`;
+}
+function todayISO() {
+  const dt = new Date();
+  const mm = String(dt.getMonth() + 1).padStart(2, '0');
+  const dd = String(dt.getDate()).padStart(2, '0');
+  return `${dt.getFullYear()}-${mm}-${dd}`;
+}
+
+// Enforces "one active project per MCP". Returns { error } or { id }.
+function createProject({ mcpNum, mcpName, assignee, assignmentDate, templateId }) {
   const data = getData();
-  const id = padId(data.nextId++);
+  const dup = activeProjects(data).find(p => p.mcpNum.trim().toLowerCase() === mcpNum.trim().toLowerCase());
+  if (dup) return { error: `MCP ${mcpNum} already has an active project (${dup.id}). Close it before creating a new one.` };
+
+  const tpl = getTemplate(data, templateId);
+  if (!tpl) return { error: 'Select a workflow template.' };
+
+  const id = padId(data.nextProjectId++);
   const ts = Date.now();
-  const tasks = TASK_TEMPLATES.map((name, i) => ({
+  const tasks = tpl.tasks.map((tt, i) => ({
     id: i + 1,
-    name,
+    templateTaskId: tt.id,
+    name: tt.name,
+    description: tt.description || '',
+    order: tt.order,
+    required: !!tt.required,
+    isAdHoc: false,
     status: 'Not Started',
-    completionDate: '',
+    priority: tt.priority || 'Medium',
+    dueDate: tt.dueOffsetDays != null ? addDaysISO(assignmentDate, tt.dueOffsetDays) : '',
+    assignedTo: assignee,
+    completionDate: '', completedBy: '', skipReason: '',
     history: [],
   }));
-  const project = { id, mcpNum, mcpName, assignee, assignmentDate, status: 'Open', tasks, history: [] };
-  project.history.push({ type: 'activity', text: 'Project created', ts });
+
+  const project = {
+    id, mcpNum: mcpNum.trim(), mcpName: mcpName.trim(),
+    assignee, assignmentDate,
+    templateId: tpl.id, templateName: tpl.name,
+    status: 'Assigned',
+    riskLevel: 'Low',
+    ragOverride: null,
+    createdDate: ts, createdBy: currentUser(),
+    closedDate: null, closedBy: '', closeReason: '', finalSummary: '', cancelReason: '',
+    nextTaskId: tasks.length + 1,
+    nextLogId: 1,
+    tasks, timeLogs: [],
+    history: [activityEntry(`${currentUser()} created the project from template "${tpl.name}" (${tasks.length} tasks)`)],
+  };
   data.projects.push(project);
   saveData(data);
-  return id;
+  return { id };
 }
 
-function getProject(id) {
+function setProjectStatus(projectId, status) {
   const data = getData();
-  const p = data.projects.find(p => p.id === id);
-  return p || null;
-}
-
-function updateTask(projectId, taskId, fields) {
-  const data = getData();
-  const p = data.projects.find(p => p.id === projectId);
-  if (!p) return;
-  const t = p.tasks.find(t => t.id === taskId);
-  if (!t) return;
-  Object.assign(t, fields);
+  const p = findProject(data, projectId);
+  if (!p || isTerminal(p) || p.status === status) return;
+  p.history.push(activityEntry(`${currentUser()} changed project status from "${p.status}" to "${status}"`));
+  p.status = status;
   saveData(data);
+  render();
 }
 
-function closeProject(projectId) {
+function setRiskLevel(projectId, level) {
   const data = getData();
-  const p = data.projects.find(p => p.id === projectId);
-  if (p) {
-    if (!p.history) p.history = [];
-    p.history.push({ type: 'activity', text: 'Project closed', ts: Date.now() });
-    p.status = 'Closed';
-    saveData(data);
+  const p = findProject(data, projectId);
+  if (!p || isTerminal(p) || p.riskLevel === level) return;
+  p.history.push(activityEntry(`${currentUser()} changed risk level from "${p.riskLevel}" to "${level}"`));
+  p.riskLevel = level;
+  saveData(data);
+  render();
+}
+
+// ── RAG: auto-calculated with optional manual override ──
+function calcRag(p) {
+  if (isTerminal(p)) return null;
+  const today = todayISO();
+  const openTasks = p.tasks.filter(t => OPEN_TASK(t.status));
+
+  if (openTasks.some(t => t.status === 'Blocked')) return 'Red';
+  if (openTasks.some(t => t.required && t.dueDate && t.dueDate < today)) return 'Red';
+
+  const soon = addDaysISO(today, 3);
+  if (openTasks.some(t => t.dueDate && t.dueDate <= soon)) return 'Amber';
+  const last = lastActivityTs(p);
+  if (Date.now() - last > 7 * 24 * 3600 * 1000) return 'Amber';
+  if (['High', 'Critical'].includes(p.riskLevel)) return 'Amber';
+
+  return 'Green';
+}
+function effectiveRag(p) {
+  if (isTerminal(p)) return null;
+  return p.ragOverride ? p.ragOverride.value : calcRag(p);
+}
+function lastActivityTs(p) {
+  let last = p.createdDate || 0;
+  (p.history || []).forEach(h => { if (h.ts > last) last = h.ts; });
+  p.tasks.forEach(t => (t.history || []).forEach(h => { if (h.ts > last) last = h.ts; }));
+  (p.timeLogs || []).forEach(l => { if (l.createdTs > last) last = l.createdTs; });
+  return last;
+}
+
+function setRagOverride(projectId, value, reason) {
+  const data = getData();
+  const p = findProject(data, projectId);
+  if (!p) return;
+  p.ragOverride = { value, reason, by: currentUser(), ts: Date.now() };
+  p.history.push(activityEntry(`${currentUser()} manually set RAG to ${value} — ${reason}`));
+  saveData(data);
+  render();
+}
+function clearRagOverride(projectId) {
+  const data = getData();
+  const p = findProject(data, projectId);
+  if (!p || !p.ragOverride) return;
+  p.ragOverride = null;
+  p.history.push(activityEntry(`${currentUser()} cleared the manual RAG override (back to auto-calculated)`));
+  saveData(data);
+  render();
+}
+
+// ─────────────────────────────────────────────
+//  TASKS
+// ─────────────────────────────────────────────
+function applyTaskStatus(projectId, taskId, newStatus, skipReason) {
+  const data = getData();
+  const p = findProject(data, projectId);
+  if (!p || isTerminal(p)) return;
+  const t = p.tasks.find(t => t.id === taskId);
+  if (!t || t.status === newStatus) return;
+
+  const oldStatus = t.status;
+  const ts = Date.now();
+  const user = currentUser();
+
+  t.status = newStatus;
+  if (newStatus === 'Complete') {
+    t.completionDate = t.completionDate || todayISO();
+    t.completedBy = user;
+  }
+  if (newStatus === 'Skipped' && skipReason) t.skipReason = skipReason;
+
+  let text = `${user} changed "${t.name}" from ${oldStatus} to ${newStatus}`;
+  if (newStatus === 'Skipped' && skipReason) text += ` — reason: ${skipReason}`;
+  t.history.push({ type: 'activity', text: `${user} changed status from ${oldStatus} to ${newStatus}` + (skipReason ? ` — reason: ${skipReason}` : ''), user, ts });
+  p.history.push({ type: 'activity', text, user, ts });
+
+  autoAdvanceProjectStatus(p);
+  saveData(data);
+  render();
+}
+
+// Status inference: first task activity bumps New/Assigned → In Progress;
+// all required tasks resolved bumps → Ready to Close.
+function autoAdvanceProjectStatus(p) {
+  const user = currentUser();
+  if (['New', 'Assigned'].includes(p.status) && p.tasks.some(t => t.status !== 'Not Started')) {
+    p.history.push({ type: 'activity', text: `Project status automatically moved from "${p.status}" to "In Progress"`, user, ts: Date.now() });
+    p.status = 'In Progress';
+  }
+  const reqOpen = p.tasks.filter(t => t.required && OPEN_TASK(t.status));
+  if (reqOpen.length === 0 && !isTerminal(p) && p.status !== 'Ready to Close') {
+    p.history.push({ type: 'activity', text: `All required tasks resolved — project status automatically moved to "Ready to Close"`, user, ts: Date.now() });
+    p.status = 'Ready to Close';
   }
 }
 
-function addProjectNote(projectId, html) {
+function updateTaskField(projectId, taskId, field, value, label) {
   const data = getData();
-  const p = data.projects.find(p => p.id === projectId);
-  if (!p) return;
-  if (!p.history) p.history = [];
-  p.history.push({ type: 'note', html, ts: Date.now() });
+  const p = findProject(data, projectId);
+  if (!p || isTerminal(p)) return;
+  const t = p.tasks.find(t => t.id === taskId);
+  if (!t || t[field] === value) return;
+  t[field] = value;
+  if (label) t.history.push(activityEntry(`${currentUser()} ${label}`));
   saveData(data);
 }
 
-function addTaskNote(projectId, taskId, html) {
+function addAdHocTask(projectId, { name, priority, dueDate, assignedTo }) {
   const data = getData();
-  const p = data.projects.find(p => p.id === projectId);
-  if (!p) return;
+  const p = findProject(data, projectId);
+  if (!p || isTerminal(p)) return;
+  const maxOrder = p.tasks.reduce((m, t) => Math.max(m, t.order), 0);
+  const t = {
+    id: p.nextTaskId++,
+    templateTaskId: null,
+    name, description: '',
+    order: maxOrder + 1,
+    required: false, isAdHoc: true,
+    status: 'Not Started',
+    priority: priority || 'Medium',
+    dueDate: dueDate || '',
+    assignedTo: assignedTo || p.assignee,
+    completionDate: '', completedBy: '', skipReason: '',
+    history: [],
+  };
+  p.tasks.push(t);
+  p.history.push(activityEntry(`${currentUser()} added ad-hoc task "${name}"`));
+  saveData(data);
+  render();
+}
+
+// Only ad-hoc tasks may be removed — template tasks are protected.
+function removeAdHocTask(projectId, taskId) {
+  const data = getData();
+  const p = findProject(data, projectId);
+  if (!p || isTerminal(p)) return;
+  const t = p.tasks.find(t => t.id === taskId);
+  if (!t || !t.isAdHoc) return;
+  p.tasks = p.tasks.filter(x => x.id !== taskId);
+  p.timeLogs = p.timeLogs.filter(l => l.taskId !== taskId);
+  p.history.push(activityEntry(`${currentUser()} removed ad-hoc task "${t.name}"`));
+  saveData(data);
+  render();
+}
+
+// ─────────────────────────────────────────────
+//  TIME LOGS
+// ─────────────────────────────────────────────
+function addTimeLog(projectId, { taskId, date, hours, minutes, activityType, notes }) {
+  const data = getData();
+  const p = findProject(data, projectId);
+  if (!p || isTerminal(p)) return;
+  const t = p.tasks.find(t => t.id === taskId);
+  const user = currentUser();
+  const log = {
+    id: p.nextLogId++,
+    taskId, user, date,
+    hours: hours | 0, minutes: minutes | 0,
+    activityType, notes: notes || '',
+    createdTs: Date.now(), edited: false,
+  };
+  p.timeLogs.push(log);
+  const dur = fmtDuration(log.hours * 60 + log.minutes);
+  const entry = activityEntry(`${user} logged ${dur} (${activityType}) on "${t ? t.name : 'task'}"${notes ? ' — ' + notes : ''}`);
+  p.history.push(entry);
+  if (t) t.history.push({ ...entry, text: `${user} logged ${dur} (${activityType})${notes ? ' — ' + notes : ''}` });
+  saveData(data);
+  render();
+}
+
+function canEditLog(log) { return isAdmin() || log.user === currentUser(); }
+
+function updateTimeLog(projectId, logId, fields) {
+  const data = getData();
+  const p = findProject(data, projectId);
+  if (!p || isTerminal(p)) return;
+  const log = p.timeLogs.find(l => l.id === logId);
+  if (!log || !canEditLog(log)) return;
+  Object.assign(log, fields, { edited: true });
+  p.history.push(activityEntry(`${currentUser()} edited a time log (now ${fmtDuration(log.hours * 60 + log.minutes)}, ${log.activityType})`));
+  saveData(data);
+  render();
+}
+
+function deleteTimeLog(projectId, logId) {
+  const data = getData();
+  const p = findProject(data, projectId);
+  if (!p || isTerminal(p)) return;
+  const log = p.timeLogs.find(l => l.id === logId);
+  if (!log || !canEditLog(log)) return;
+  p.timeLogs = p.timeLogs.filter(l => l.id !== logId);
+  p.history.push(activityEntry(`${currentUser()} deleted a time log of ${fmtDuration(log.hours * 60 + log.minutes)} (${log.activityType})`));
+  saveData(data);
+  render();
+}
+
+function taskMinutes(p, taskId) {
+  return p.timeLogs.filter(l => l.taskId === taskId).reduce((s, l) => s + l.hours * 60 + l.minutes, 0);
+}
+function projectMinutes(p) {
+  return p.timeLogs.reduce((s, l) => s + l.hours * 60 + l.minutes, 0);
+}
+function fmtDuration(mins) {
+  const h = Math.floor(mins / 60), m = mins % 60;
+  if (h && m) return `${h}h ${m}m`;
+  if (h) return `${h}h`;
+  return `${m}m`;
+}
+
+// ─────────────────────────────────────────────
+//  NOTES
+// ─────────────────────────────────────────────
+function addProjectNote(projectId, html, category) {
+  const data = getData();
+  const p = findProject(data, projectId);
+  if (!p || isTerminal(p)) return;
+  p.history.push({ type: 'note', html, category, user: currentUser(), ts: Date.now() });
+  saveData(data);
+}
+function addTaskNote(projectId, taskId, html, category) {
+  const data = getData();
+  const p = findProject(data, projectId);
+  if (!p || isTerminal(p)) return;
   const t = p.tasks.find(t => t.id === taskId);
   if (!t) return;
-  if (!t.history) t.history = [];
-  t.history.push({ type: 'note', html, ts: Date.now() });
+  t.history.push({ type: 'note', html, category, user: currentUser(), ts: Date.now() });
+  saveData(data);
+}
+
+// ─────────────────────────────────────────────
+//  CLOSURE
+// ─────────────────────────────────────────────
+function closureBlockers(p) {
+  return p.tasks.filter(t => t.required && OPEN_TASK(t.status));
+}
+
+function closeProject(projectId, { finalSummary, closeReason, overridden }) {
+  const data = getData();
+  const p = findProject(data, projectId);
+  if (!p || isTerminal(p)) return;
+  const user = currentUser();
+  p.status = 'Closed';
+  p.closedDate = Date.now();
+  p.closedBy = user;
+  p.closeReason = closeReason;
+  p.finalSummary = finalSummary;
+  p.ragOverride = null;
+  let text = `${user} closed the project — reason: ${closeReason}`;
+  if (overridden) text += ' (admin override: required tasks incomplete)';
+  p.history.push(activityEntry(text));
+  saveData(data);
+}
+
+function cancelProject(projectId, reason) {
+  const data = getData();
+  const p = findProject(data, projectId);
+  if (!p || isTerminal(p)) return;
+  const user = currentUser();
+  p.status = 'Cancelled';
+  p.closedDate = Date.now();
+  p.closedBy = user;
+  p.closeReason = 'Cancelled';
+  p.cancelReason = reason;
+  p.ragOverride = null;
+  p.history.push(activityEntry(`${user} cancelled the project — reason: ${reason}`));
   saveData(data);
 }
 
 function progressText(project) {
-  const done = project.tasks.filter(t => t.status === 'Complete' || t.status === 'Skipped' || t.status === 'Cancelled').length;
+  const done = project.tasks.filter(t => !OPEN_TASK(t.status)).length;
   return { done, total: project.tasks.length };
+}
+function daysOpen(p) {
+  const start = p.assignmentDate ? new Date(p.assignmentDate + 'T00:00:00').getTime() : p.createdDate;
+  const end = p.closedDate || Date.now();
+  return Math.max(0, Math.round((end - start) / 86400000));
 }
 
 // ─────────────────────────────────────────────
 //  ROUTER / STATE
 // ─────────────────────────────────────────────
-let currentView = 'home';
-let currentTab = 'open';
+let currentView = 'dashboard';
 let currentProjectId = null;
+let currentTemplateId = null;
+let projectFilter = { status: '', rag: '', search: '' };
+let tplDraft = null; // in-memory template being edited
 
-function navigate(view, projectId) {
+function navigate(view, id) {
   currentView = view;
-  if (projectId !== undefined) currentProjectId = projectId;
+  if (view === 'detail') currentProjectId = id;
+  if (view === 'templateEdit') { currentTemplateId = id || null; tplDraft = null; }
   closeDrawer();
+  dismissModal();
   render();
 }
 
 // ─────────────────────────────────────────────
 //  HELPERS
 // ─────────────────────────────────────────────
-function statusBadgeClass(status) {
-  return 'badge badge-' + status.toLowerCase().replace(' ', '-');
+function escHtml(s) {
+  return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
+function taskBadgeClass(status) { return 'badge badge-' + status.toLowerCase().replace(/ /g, '-'); }
+function projectBadge(status) {
+  return `<span class="badge badge-p-${status.toLowerCase().replace(/ /g, '-')}">${escHtml(status)}</span>`;
+}
+function ragChip(p) {
+  const rag = effectiveRag(p);
+  if (!rag) return '<span class="text-muted" style="font-size:12px">—</span>';
+  const manual = p.ragOverride ? ` <span class="rag-manual">manual</span>` : '';
+  const title = p.ragOverride ? `Manually set by ${p.ragOverride.by}: ${p.ragOverride.reason}` : 'Auto-calculated from blockers, overdue tasks and staleness';
+  return `<span class="rag-chip rag-${rag.toLowerCase()}" title="${escHtml(title)}"><span class="rag-dot"></span>${rag}${manual}</span>`;
+}
+function riskBadge(level) {
+  return `<span class="badge risk-${level.toLowerCase()}">${escHtml(level)}</span>`;
+}
+function prioChip(pr) { return `<span class="prio-chip prio-${pr.toLowerCase()}">${escHtml(pr)}</span>`; }
 
 function statusSelectStyle(select) {
   const map = {
-    'Not Started': '#f1f5f9',
-    'In Progress': '#dbeafe',
-    'Blocked': '#fee2e2',
-    'Complete': '#dcfce7',
-    'Skipped': '#fef9c3',
-    'Cancelled': '#f3f4f6',
+    'Not Started': '#f1f5f9', 'In Progress': '#dbeafe', 'Blocked': '#fee2e2',
+    'Complete': '#dcfce7', 'Skipped': '#fef9c3', 'Cancelled': '#f3f4f6',
   };
   select.style.background = map[select.value] || '#fff';
-}
-
-function escHtml(s) {
-  return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
 function formatTs(ts) {
@@ -617,22 +1243,50 @@ function formatTs(ts) {
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
     + ' at ' + d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
 }
-
-function formatDateForActivity(dateStr) {
+function formatDateShort(dateStr) {
+  if (!dateStr) return '—';
   const [y, m, d] = dateStr.split('-').map(Number);
   return new Date(y, m - 1, d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
-// ─────────────────────────────────────────────
-//  VIEWS
-// ─────────────────────────────────────────────
-function renderHome() {
-  const data = getData();
-  const openProjects = data.projects.filter(p => p.status === 'Open');
-  const closedProjects = data.projects.filter(p => p.status === 'Closed');
+function selOptions(list, selected) {
+  return list.map(v => `<option value="${escHtml(v)}" ${v === selected ? 'selected' : ''}>${escHtml(v)}</option>`).join('');
+}
 
-  const rows = (list) => list.length === 0
-    ? `<tr class="empty-row"><td colspan="6">No projects here yet.</td></tr>`
+// ─────────────────────────────────────────────
+//  GENERIC MODAL
+// ─────────────────────────────────────────────
+function openModal(html) {
+  dismissModal();
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.id = 'modalOverlay';
+  overlay.addEventListener('click', e => { if (e.target === overlay) dismissModal(); });
+  overlay.innerHTML = `<div class="modal" onclick="event.stopPropagation()">${html}</div>`;
+  document.body.appendChild(overlay);
+}
+function dismissModal() { document.getElementById('modalOverlay')?.remove(); }
+function modalError(msg) {
+  const el = document.getElementById('modalError');
+  if (el) { el.textContent = msg; el.style.display = 'block'; }
+}
+
+// ─────────────────────────────────────────────
+//  VIEW: PROJECTS LIST
+// ─────────────────────────────────────────────
+function renderProjects() {
+  const data = getData();
+  let list = activeProjects(data);
+
+  if (projectFilter.status) list = list.filter(p => p.status === projectFilter.status);
+  if (projectFilter.rag) list = list.filter(p => effectiveRag(p) === projectFilter.rag);
+  if (projectFilter.search) {
+    const q = projectFilter.search.toLowerCase();
+    list = list.filter(p => (p.id + ' ' + p.mcpNum + ' ' + p.mcpName + ' ' + p.assignee).toLowerCase().includes(q));
+  }
+
+  const rows = list.length === 0
+    ? `<tr class="empty-row"><td colspan="8">No active projects match.</td></tr>`
     : list.map(p => {
         const { done, total } = progressText(p);
         const pct = total ? Math.round((done / total) * 100) : 0;
@@ -642,61 +1296,113 @@ function renderHome() {
             <td>${escHtml(p.mcpNum)}</td>
             <td>${escHtml(p.mcpName)}</td>
             <td>${escHtml(p.assignee)}</td>
-            <td>${escHtml(p.assignmentDate)}</td>
+            <td>${projectBadge(p.status)}</td>
+            <td>${ragChip(p)}</td>
+            <td>${daysOpen(p)}d</td>
             <td>
               <div class="progress-wrap">
                 <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
-                <span class="progress-label">${done} / ${total} complete</span>
+                <span class="progress-label">${done}/${total}</span>
               </div>
             </td>
           </tr>`;
       }).join('');
 
-  const tableHtml = (list) => `
-    <div class="table-wrap">
-      <table>
-        <thead><tr>
-          <th>Project ID</th><th>MCP #</th><th>MCP Name</th>
-          <th>Assignee</th><th>Assignment Date</th><th>Progress</th>
-        </tr></thead>
-        <tbody>${rows(list)}</tbody>
-      </table>
-    </div>`;
-
   return `
     <div class="card-header" style="margin-bottom:20px;background:transparent;border:none;padding:0;box-shadow:none">
-      <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
-        <h1 style="font-size:20px;font-weight:700">Projects</h1>
-        <div class="tabs">
-          <button class="tab-btn ${currentTab==='open'?'active':''}" onclick="switchTab('open')">Open (${openProjects.length})</button>
-          <button class="tab-btn ${currentTab==='closed'?'active':''}" onclick="switchTab('closed')">Closed (${closedProjects.length})</button>
-        </div>
-      </div>
+      <h1 style="font-size:20px;font-weight:700">Active Projects</h1>
       <button class="btn btn-primary" onclick="navigate('create')">+ Create Project</button>
     </div>
     <div class="card">
       <div class="card-header">
-        <span class="card-title">${currentTab === 'open' ? 'Open Projects' : 'Closed Projects'}</span>
-        ${currentTab === 'open'
-          ? `<span class="text-muted" style="font-size:13px">${openProjects.length} project${openProjects.length!==1?'s':''}</span>`
-          : `<span class="text-muted" style="font-size:13px">${closedProjects.length} project${closedProjects.length!==1?'s':''}</span>`}
+        <div class="filter-bar">
+          <input type="text" placeholder="Search MCP, name, assignee…" value="${escHtml(projectFilter.search)}"
+            oninput="projectFilter.search=this.value; refreshList(this)" />
+          <select onchange="projectFilter.status=this.value; render()">
+            <option value="">All statuses</option>
+            ${PROJECT_STATUSES.map(s => `<option ${projectFilter.status===s?'selected':''}>${s}</option>`).join('')}
+          </select>
+          <select onchange="projectFilter.rag=this.value; render()">
+            <option value="">All RAG</option>
+            ${['Red','Amber','Green'].map(r => `<option ${projectFilter.rag===r?'selected':''}>${r}</option>`).join('')}
+          </select>
+        </div>
+        <span class="text-muted" style="font-size:13px">${list.length} project${list.length!==1?'s':''}</span>
       </div>
-      ${currentTab === 'open' ? tableHtml(openProjects) : tableHtml(closedProjects)}
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Project ID</th><th>MCP #</th><th>MCP Name</th><th>Assignee</th>
+            <th>Status</th><th>RAG</th><th>Age</th><th>Progress</th>
+          </tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
     </div>`;
 }
 
-function switchTab(tab) {
-  currentTab = tab;
+// Re-render while keeping focus in the search box
+function refreshList(input) {
+  const pos = input.selectionStart;
   render();
+  const el = document.querySelector('.filter-bar input');
+  if (el) { el.focus(); el.setSelectionRange(pos, pos); }
 }
 
-function renderCreate() {
+// ─────────────────────────────────────────────
+//  VIEW: HISTORY
+// ─────────────────────────────────────────────
+function renderHistory() {
+  const data = getData();
+  const list = historicalProjects(data).sort((a, b) => (b.closedDate || 0) - (a.closedDate || 0));
+
+  const rows = list.length === 0
+    ? `<tr class="empty-row"><td colspan="8">No closed or cancelled projects yet.</td></tr>`
+    : list.map(p => `
+        <tr class="clickable" onclick="navigate('detail','${escHtml(p.id)}')">
+          <td class="fw-600" style="color:var(--accent)">${escHtml(p.id)}</td>
+          <td>${escHtml(p.mcpNum)}</td>
+          <td>${escHtml(p.mcpName)}</td>
+          <td>${escHtml(p.assignee)}</td>
+          <td>${projectBadge(p.status)}</td>
+          <td>${escHtml(p.closeReason || '—')}</td>
+          <td>${p.closedDate ? formatTs(p.closedDate).split(' at ')[0] : '—'}</td>
+          <td>${daysOpen(p)}d</td>
+        </tr>`).join('');
+
   return `
-    <a class="back-link" onclick="navigate('home')">← Back to Projects</a>
-    <div class="card" style="max-width:600px">
+    <div class="card-header" style="margin-bottom:20px;background:transparent;border:none;padding:0;box-shadow:none">
+      <h1 style="font-size:20px;font-weight:700">History</h1>
+      <span class="text-muted" style="font-size:13px">Closed and cancelled projects are permanent, read-only records.</span>
+    </div>
+    <div class="card">
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Project ID</th><th>MCP #</th><th>MCP Name</th><th>Assignee</th>
+            <th>Outcome</th><th>Close Reason</th><th>Closed</th><th>Days Open</th>
+          </tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+    </div>`;
+}
+
+// ─────────────────────────────────────────────
+//  VIEW: CREATE PROJECT
+// ─────────────────────────────────────────────
+function renderCreate() {
+  const data = getData();
+  const templates = activeTemplates(data);
+  const dflt = defaultTemplate(data);
+
+  return `
+    <a class="back-link" onclick="navigate('projects')">← Back to Projects</a>
+    <div class="card" style="max-width:640px">
       <div class="card-header"><span class="card-title">Create New Project</span></div>
       <div class="card-body">
         <form id="createForm" onsubmit="handleCreate(event)">
+          <div class="form-error hidden" id="createError" style="margin-top:20px"></div>
           <div class="form-grid">
             <div class="form-group">
               <label>MCP #</label>
@@ -707,22 +1413,23 @@ function renderCreate() {
               <input type="text" id="f_mcpName" placeholder="e.g. Acme Corp" required />
             </div>
             <div class="form-group">
-              <label>Assignee Name</label>
-              <input type="text" id="f_assignee" placeholder="e.g. Jane Smith" required />
+              <label>Assignee</label>
+              <input type="text" id="f_assignee" placeholder="e.g. Jane Smith" value="${escHtml(getData().settings.currentUser)}" required />
             </div>
             <div class="form-group">
               <label>Assignment Date</label>
-              <input type="date" id="f_date" required />
+              <input type="date" id="f_date" value="${todayISO()}" required />
             </div>
-            <div class="form-group full" style="background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:16px;">
-              <label style="margin-bottom:8px">9 tasks will be created automatically</label>
-              <ol style="padding-left:18px;color:var(--text-muted);font-size:13px;line-height:2">
-                ${TASK_TEMPLATES.map(t => `<li>${escHtml(t)}</li>`).join('')}
-              </ol>
+            <div class="form-group full">
+              <label>Workflow Template</label>
+              <select id="f_template" onchange="renderTemplatePreview()">
+                ${templates.map(t => `<option value="${escHtml(t.id)}" ${dflt && t.id===dflt.id?'selected':''}>${escHtml(t.name)}${t.isDefault?' (default)':''}</option>`).join('')}
+              </select>
             </div>
+            <div class="form-group full" style="background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:16px;" id="tplPreview"></div>
           </div>
           <div class="form-actions">
-            <button type="button" class="btn btn-ghost" onclick="navigate('home')">Cancel</button>
+            <button type="button" class="btn btn-ghost" onclick="navigate('projects')">Cancel</button>
             <button type="submit" class="btn btn-primary">Create Project</button>
           </div>
         </form>
@@ -730,71 +1437,128 @@ function renderCreate() {
     </div>`;
 }
 
-function handleCreate(e) {
-  e.preventDefault();
-  const mcpNum = document.getElementById('f_mcpNum').value.trim();
-  const mcpName = document.getElementById('f_mcpName').value.trim();
-  const assignee = document.getElementById('f_assignee').value.trim();
-  const assignmentDate = document.getElementById('f_date').value;
-  const id = createProject({ mcpNum, mcpName, assignee, assignmentDate });
-  navigate('detail', id);
+function renderTemplatePreview() {
+  const data = getData();
+  const sel = document.getElementById('f_template');
+  const box = document.getElementById('tplPreview');
+  if (!sel || !box) return;
+  const tpl = getTemplate(data, sel.value);
+  if (!tpl) { box.innerHTML = '<span class="text-muted">No template selected.</span>'; return; }
+  box.innerHTML = `
+    <label style="margin-bottom:8px">${tpl.tasks.length} tasks will be created automatically</label>
+    <ol style="padding-left:18px;color:var(--text-muted);font-size:13px;line-height:2">
+      ${tpl.tasks.map(t => `<li>${escHtml(t.name)}${t.required ? ' <span class="req-star" title="Required">*</span>' : ' <span style="font-size:11px">(optional)</span>'}</li>`).join('')}
+    </ol>
+    <div style="font-size:11px;color:var(--text-light);margin-top:6px"><span class="req-star">*</span> required — must be completed or formally skipped before the project can close. Template tasks cannot be deleted or reordered.</div>`;
 }
 
+function handleCreate(e) {
+  e.preventDefault();
+  const res = createProject({
+    mcpNum: document.getElementById('f_mcpNum').value.trim(),
+    mcpName: document.getElementById('f_mcpName').value.trim(),
+    assignee: document.getElementById('f_assignee').value.trim(),
+    assignmentDate: document.getElementById('f_date').value,
+    templateId: document.getElementById('f_template').value,
+  });
+  if (res.error) {
+    const el = document.getElementById('createError');
+    el.textContent = res.error;
+    el.classList.remove('hidden');
+    return;
+  }
+  navigate('detail', res.id);
+}
+
+// ─────────────────────────────────────────────
+//  VIEW: PROJECT DETAIL
+// ─────────────────────────────────────────────
 function renderDetail() {
   const p = getProject(currentProjectId);
-  if (!p) { navigate('home'); return ''; }
+  if (!p) { navigate('projects'); return ''; }
 
   const { done, total } = progressText(p);
-  const isClosed = p.status === 'Closed';
+  const locked = isTerminal(p);
+  const totalMins = projectMinutes(p);
 
-  const taskRows = p.tasks.map((t, i) => {
-    const selOptions = TASK_STATUSES.map(s =>
-      `<option value="${s}" ${t.status===s?'selected':''}>${s}</option>`
-    ).join('');
+  const banner = !locked ? '' : (p.status === 'Closed'
+    ? `<div class="closed-banner"><strong>Closed</strong> by ${escHtml(p.closedBy || '—')} on ${p.closedDate ? formatTs(p.closedDate) : '—'} · Reason: ${escHtml(p.closeReason || '—')} — this project is a permanent read-only record. If this MCP needs the process again, create a new project.</div>`
+    : `<div class="closed-banner is-cancelled"><strong>Cancelled</strong> by ${escHtml(p.closedBy || '—')} on ${p.closedDate ? formatTs(p.closedDate) : '—'}${p.cancelReason ? ' · Reason: ' + escHtml(p.cancelReason) : ''} — read-only record.</div>`);
 
+  const templateTasks = p.tasks.filter(t => !t.isAdHoc).sort((a, b) => a.order - b.order);
+  const adhocTasks = p.tasks.filter(t => t.isAdHoc).sort((a, b) => a.order - b.order);
+
+  const taskRow = (t, idx, adhoc) => {
+    const today = todayISO();
+    const overdue = OPEN_TASK(t.status) && t.dueDate && t.dueDate < today;
+    const mins = taskMinutes(p, t.id);
     return `
       <div class="task-row">
-        <div class="task-num">${i + 1}</div>
-        <div class="task-name">${escHtml(t.name)}</div>
-        <select class="task-select" id="ts_${t.id}"
-          onchange="handleTaskStatus('${escHtml(p.id)}', ${t.id}, this)"
-          ${isClosed ? 'disabled' : ''}>
-          ${selOptions}
+        <div class="task-num ${adhoc ? 'adhoc' : ''}" title="${adhoc ? 'Ad-hoc task' : 'Template task (locked order)'}">${adhoc ? '+' : idx}</div>
+        <div>
+          <div class="task-name">${escHtml(t.name)}${t.required ? '<span class="req-star" title="Required task">*</span>' : ''}
+            ${!adhoc ? '<span class="lock-ico" title="Standard template task — cannot be deleted or reordered"> 🔒</span>' : ''}
+          </div>
+          <div class="task-sub">
+            ${prioChip(t.priority)}
+            ${t.assignedTo ? `<span>${escHtml(t.assignedTo)}</span>` : ''}
+            ${mins ? `<span title="Time logged">⏱ ${fmtDuration(mins)}</span>` : ''}
+            ${overdue ? `<span class="overdue-flag">OVERDUE</span>` : ''}
+            ${t.status === 'Skipped' && t.skipReason ? `<span title="Skip reason">Skipped: ${escHtml(t.skipReason)}</span>` : ''}
+            ${t.status === 'Complete' && t.completedBy ? `<span>Done by ${escHtml(t.completedBy)} ${formatDateShort(t.completionDate)}</span>` : ''}
+          </div>
+        </div>
+        <select class="task-select" onchange="handleTaskStatus('${escHtml(p.id)}', ${t.id}, this)" ${locked ? 'disabled' : ''}>
+          ${selOptions(TASK_STATUSES, t.status)}
         </select>
-        <input type="date" class="task-date-input" id="td_${t.id}"
-          value="${escHtml(t.completionDate)}"
-          onchange="handleTaskDate('${escHtml(p.id)}', ${t.id}, this.value)"
-          ${isClosed ? 'disabled' : ''} />
-        <button class="btn-notes" onclick="openTaskDrawer('${escHtml(p.id)}', ${t.id})">
-          <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12.5V14h1.5l8.06-8.06-1.5-1.5L2 12.5z"/><path d="M13.06 3.44a1.06 1.06 0 0 0-1.5 0l-.56.56 1.5 1.5.56-.56a1.06 1.06 0 0 0 0-1.5z"/></svg>
-          Notes
-        </button>
+        <input type="date" class="task-date-input" value="${escHtml(t.dueDate)}" title="Due date"
+          onchange="handleTaskDue('${escHtml(p.id)}', ${t.id}, this.value)" ${locked ? 'disabled' : ''} />
+        <div class="task-actions">
+          <button class="btn-notes" onclick="openTaskDrawer('${escHtml(p.id)}', ${t.id})" title="Notes & activity">✎ Notes</button>
+          ${!locked ? `<button class="btn-notes" onclick="showTimeLogModal('${escHtml(p.id)}', ${t.id})" title="Log time">⏱ Log</button>` : ''}
+          ${adhoc && !locked ? `<button class="btn-notes danger" onclick="showRemoveAdhoc('${escHtml(p.id)}', ${t.id})" title="Remove ad-hoc task">✕</button>` : ''}
+        </div>
       </div>`;
-  }).join('');
+  };
+
+  const statusControl = locked
+    ? projectBadge(p.status)
+    : `<select class="meta-select" onchange="setProjectStatus('${escHtml(p.id)}', this.value)">${selOptions(PROJECT_STATUSES, p.status)}</select>`;
+
+  const riskControl = locked
+    ? riskBadge(p.riskLevel)
+    : `<select class="meta-select" onchange="setRiskLevel('${escHtml(p.id)}', this.value)">${selOptions(RISK_LEVELS, p.riskLevel)}</select>`;
+
+  const ragControl = locked ? '<span class="text-muted" style="font-size:13px">—</span>' : `
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+      ${ragChip(p)}
+      <button class="btn-notes" onclick="showRagModal('${escHtml(p.id)}')" title="Override RAG">Override</button>
+      ${p.ragOverride ? `<button class="btn-notes" onclick="clearRagOverride('${escHtml(p.id)}')" title="Back to auto">Auto</button>` : ''}
+    </div>`;
 
   return `
-    <a class="back-link" onclick="navigate('home')">← Back to Projects</a>
+    <a class="back-link" onclick="navigate('${locked ? 'history' : 'projects'}')">← Back to ${locked ? 'History' : 'Projects'}</a>
+    ${banner}
     <div class="detail-header">
       <div class="detail-top">
         <div>
-          <div class="detail-pid">${escHtml(p.id)}</div>
-          <span class="${statusBadgeClass(p.status)}" style="margin-top:6px;display:inline-flex">${p.status}</span>
+          <div class="detail-pid">${escHtml(p.id)} <span class="text-muted" style="font-size:15px;font-weight:400">· ${escHtml(p.mcpName)}</span></div>
+          <div style="margin-top:8px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">${projectBadge(p.status)}${!locked ? ragChip(p) : ''}</div>
         </div>
         <div class="detail-actions">
-          <button class="btn btn-ghost" onclick="openProjectDrawer('${escHtml(p.id)}')">
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2H3a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V8"/><path d="M13 1l2 2-6 6H7V7l6-6z"/></svg>
-            Project Notes &amp; Activity
-          </button>
-          ${!isClosed
-            ? `<button class="btn btn-success" onclick="showCloseConfirm('${escHtml(p.id)}')">Close Project</button>`
-            : `<span class="badge badge-closed" style="padding:8px 14px;font-size:12px">Project Closed</span>`}
+          <button class="btn btn-ghost" onclick="openProjectDrawer('${escHtml(p.id)}')">✎ Notes &amp; Activity</button>
+          ${!locked ? `<button class="btn btn-ghost" onclick="showCancelModal('${escHtml(p.id)}')">Cancel Project</button>
+          <button class="btn btn-success" onclick="showCloseModal('${escHtml(p.id)}')">Close Project</button>` : ''}
         </div>
       </div>
       <div class="detail-meta">
         <div class="meta-item"><div class="meta-label">MCP #</div><div class="meta-value">${escHtml(p.mcpNum)}</div></div>
         <div class="meta-item"><div class="meta-label">MCP Name</div><div class="meta-value">${escHtml(p.mcpName)}</div></div>
         <div class="meta-item"><div class="meta-label">Assignee</div><div class="meta-value">${escHtml(p.assignee)}</div></div>
-        <div class="meta-item"><div class="meta-label">Assignment Date</div><div class="meta-value">${escHtml(p.assignmentDate)}</div></div>
+        <div class="meta-item"><div class="meta-label">Assigned</div><div class="meta-value">${formatDateShort(p.assignmentDate)}</div></div>
+        <div class="meta-item"><div class="meta-label">Template</div><div class="meta-value" style="font-size:13px">${escHtml(p.templateName || '—')}</div></div>
+        <div class="meta-item"><div class="meta-label">Days Open</div><div class="meta-value">${daysOpen(p)}</div></div>
+        <div class="meta-item"><div class="meta-label">Time Logged</div><div class="meta-value">${totalMins ? fmtDuration(totalMins) : '—'}</div></div>
         <div class="meta-item">
           <div class="meta-label">Progress</div>
           <div class="meta-value" style="display:flex;align-items:center;gap:8px">
@@ -803,107 +1567,619 @@ function renderDetail() {
           </div>
         </div>
       </div>
+      <div class="detail-meta" style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
+        <div class="meta-item"><div class="meta-label">Project Status</div><div>${statusControl}</div></div>
+        <div class="meta-item"><div class="meta-label">Risk Level</div><div>${riskControl}</div></div>
+        <div class="meta-item" style="grid-column:span 2"><div class="meta-label">RAG (auto + override)</div><div>${ragControl}</div></div>
+      </div>
+      ${p.status === 'Closed' && p.finalSummary ? `
+        <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
+          <div class="meta-label" style="margin-bottom:6px">Final Summary</div>
+          <div style="font-size:14px;line-height:1.6">${escHtml(p.finalSummary)}</div>
+        </div>` : ''}
     </div>
 
-    <div class="card">
-      <div class="card-header"><span class="card-title">Tasks</span></div>
+    <div class="card" style="margin-bottom:24px">
+      <div class="card-header">
+        <span class="card-title">Tasks</span>
+        ${!locked ? `<button class="btn btn-ghost btn-sm" onclick="showAddTaskModal('${escHtml(p.id)}')">+ Add Ad-hoc Task</button>` : ''}
+      </div>
       <div class="task-col-header">
         <div></div>
         <div class="task-col-label">Task</div>
         <div class="task-col-label">Status</div>
-        <div class="task-col-label">Completion Date</div>
-        <div class="task-col-label">Notes</div>
+        <div class="task-col-label">Due Date</div>
+        <div class="task-col-label" style="text-align:right">Actions</div>
       </div>
-      ${taskRows}
+      <div class="task-section-header"><span class="task-section-title">Template tasks — ${escHtml(p.templateName || 'Standard')}</span></div>
+      ${templateTasks.map((t, i) => taskRow(t, i + 1, false)).join('') || '<div class="history-empty">No template tasks.</div>'}
+      ${adhocTasks.length ? `
+        <div class="task-section-header"><span class="task-section-title">Ad-hoc tasks</span></div>
+        ${adhocTasks.map((t) => taskRow(t, 0, true)).join('')}` : ''}
+    </div>
+
+    ${renderTimeCard(p, locked)}`;
+}
+
+function renderTimeCard(p, locked) {
+  const logs = [...p.timeLogs].sort((a, b) => (b.date > a.date ? 1 : b.date < a.date ? -1 : b.id - a.id));
+  const totalMins = projectMinutes(p);
+  const byType = {};
+  p.timeLogs.forEach(l => { byType[l.activityType] = (byType[l.activityType] || 0) + l.hours * 60 + l.minutes; });
+  const topType = Object.entries(byType).sort((a, b) => b[1] - a[1])[0];
+
+  const rows = logs.length === 0
+    ? `<tr class="empty-row"><td colspan="7">No time logged yet.</td></tr>`
+    : logs.map(l => {
+        const t = p.tasks.find(t => t.id === l.taskId);
+        return `
+          <tr>
+            <td>${formatDateShort(l.date)}</td>
+            <td>${escHtml(l.user)}${l.edited ? ' <span class="text-muted" style="font-size:10px">(edited)</span>' : ''}</td>
+            <td style="max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${escHtml(t ? t.name : '')}">${escHtml(t ? t.name : '—')}</td>
+            <td class="fw-600">${fmtDuration(l.hours * 60 + l.minutes)}</td>
+            <td>${escHtml(l.activityType)}</td>
+            <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${escHtml(l.notes)}">${escHtml(l.notes || '—')}</td>
+            <td>
+              ${!locked && canEditLog(l) ? `
+                <div class="task-actions">
+                  <button class="btn-notes" onclick="showTimeLogModal('${escHtml(p.id)}', ${l.taskId}, ${l.id})">Edit</button>
+                  <button class="btn-notes danger" onclick="showDeleteLog('${escHtml(p.id)}', ${l.id})">✕</button>
+                </div>` : ''}
+            </td>
+          </tr>`;
+      }).join('');
+
+  return `
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Time Log</span>
+        ${!locked ? `<button class="btn btn-ghost btn-sm" onclick="showTimeLogModal('${escHtml(p.id)}')">+ Log Time</button>` : ''}
+      </div>
+      <div class="time-summary">
+        <div class="time-stat"><span class="time-stat-value">${totalMins ? fmtDuration(totalMins) : '0m'}</span><span class="time-stat-label">Total logged</span></div>
+        <div class="time-stat"><span class="time-stat-value">${p.timeLogs.length}</span><span class="time-stat-label">Entries</span></div>
+        <div class="time-stat"><span class="time-stat-value" style="font-size:14px;padding-top:5px">${topType ? escHtml(topType[0]) : '—'}</span><span class="time-stat-label">Top activity</span></div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Date</th><th>User</th><th>Task</th><th>Duration</th><th>Activity</th><th>Notes</th><th></th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
     </div>`;
 }
 
+// ── task handlers ──
 function handleTaskStatus(projectId, taskId, select) {
-  const data = getData();
-  const p = data.projects.find(p => p.id === projectId);
-  if (!p) return;
-  const t = p.tasks.find(t => t.id === taskId);
+  const p = getProject(projectId);
+  const t = p && p.tasks.find(t => t.id === taskId);
   if (!t) return;
-
-  const oldStatus = t.status;
   const newStatus = select.value;
-  statusSelectStyle(select);
-
-  if (oldStatus !== newStatus) {
-    if (!t.history) t.history = [];
-    if (!p.history) p.history = [];
-    const text = `Status changed from "${oldStatus}" to "${newStatus}"`;
-    const ts = Date.now();
-    t.history.push({ type: 'activity', text, ts });
-    p.history.push({ type: 'activity', text: `Task "${t.name}": ${text}`, ts });
+  if (newStatus === 'Skipped' && t.required) {
+    showSkipReasonModal(projectId, taskId, t.status, select);
+    return;
   }
-  t.status = newStatus;
-  saveData(data);
-
-  // Refresh progress display without full re-render
-  const proj = getProject(projectId);
-  const { done, total } = progressText(proj);
-  const pct = total ? Math.round((done / total) * 100) : 0;
-  document.querySelectorAll('.progress-fill').forEach(el => el.style.width = pct + '%');
-  document.querySelectorAll('.meta-value').forEach(el => {
-    if (el.textContent.trim().match(/^\d+ \/ \d+$/)) el.innerHTML = `${done} / ${total}`;
-  });
+  applyTaskStatus(projectId, taskId, newStatus);
 }
 
-function handleTaskDate(projectId, taskId, value) {
-  const data = getData();
-  const p = data.projects.find(p => p.id === projectId);
-  if (!p) return;
+function handleTaskDue(projectId, taskId, value) {
+  updateTaskField(projectId, taskId, 'dueDate', value, `set due date to ${value ? formatDateShort(value) : 'none'}`);
+  render();
+}
+
+// ── modals ──
+function showSkipReasonModal(projectId, taskId, oldStatus, select) {
+  const p = getProject(projectId);
   const t = p.tasks.find(t => t.id === taskId);
-  if (!t) return;
-
-  if (!t.history) t.history = [];
-  if (value) {
-    const formatted = formatDateForActivity(value);
-    t.history.push({ type: 'activity', text: `Completion date set to ${formatted}`, ts: Date.now() });
-  }
-  t.completionDate = value;
-  saveData(data);
+  openModal(`
+    <div class="modal-header"><div class="modal-title">Skip required task?</div></div>
+    <div class="modal-body">
+      <div class="text-muted" style="font-size:13px">"${escHtml(t.name)}" is a <strong>required</strong> task. A reason is required to formally skip it.</div>
+      <div class="form-group"><label>Skip reason</label><textarea id="m_skipReason" placeholder="Why is this task being skipped?"></textarea></div>
+      <div class="modal-error" id="modalError"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="cancelSkip('${escHtml(projectId)}')">Cancel</button>
+      <button class="btn btn-primary" onclick="confirmSkip('${escHtml(projectId)}', ${taskId})">Skip Task</button>
+    </div>`);
+  window._skipRevert = { select, oldStatus };
 }
-
-function showCloseConfirm(projectId) {
-  const overlay = document.createElement('div');
-  overlay.className = 'modal-overlay';
-  overlay.innerHTML = `
-    <div class="modal">
-      <div class="modal-header"><div class="modal-title">Close Project?</div></div>
-      <div class="confirm-body">
-        This will mark the project as <strong>Closed</strong> and move it out of the open projects list.
-        You can still view it in the Closed Projects tab. This action cannot be undone.
-      </div>
-      <div class="confirm-actions">
-        <button class="btn btn-ghost" onclick="dismissModal()">Cancel</button>
-        <button class="btn btn-danger" onclick="confirmClose('${escHtml(projectId)}')">Close Project</button>
-      </div>
-    </div>`;
-  document.body.appendChild(overlay);
-}
-
-function dismissModal() {
-  document.querySelector('.modal-overlay')?.remove();
-}
-
-function confirmClose(projectId) {
+function cancelSkip() {
+  if (window._skipRevert) { window._skipRevert.select.value = window._skipRevert.oldStatus; statusSelectStyle(window._skipRevert.select); }
+  window._skipRevert = null;
   dismissModal();
-  closeProject(projectId);
-  navigate('home');
+}
+function confirmSkip(projectId, taskId) {
+  const reason = document.getElementById('m_skipReason').value.trim();
+  if (!reason) { modalError('A skip reason is required.'); return; }
+  window._skipRevert = null;
+  dismissModal();
+  applyTaskStatus(projectId, taskId, 'Skipped', reason);
+}
+
+function showAddTaskModal(projectId) {
+  openModal(`
+    <div class="modal-header"><div class="modal-title">Add Ad-hoc Task</div></div>
+    <div class="modal-body">
+      <div class="form-group"><label>Task name</label><input type="text" id="m_taskName" placeholder="e.g. Action plan: correct meter multiplier" /></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+        <div class="form-group"><label>Priority</label><select id="m_taskPrio">${selOptions(PRIORITIES, 'Medium')}</select></div>
+        <div class="form-group"><label>Due date</label><input type="date" id="m_taskDue" /></div>
+      </div>
+      <div class="form-group"><label>Assigned to</label><input type="text" id="m_taskAssignee" value="${escHtml(getProject(projectId).assignee)}" /></div>
+      <div class="modal-error" id="modalError"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="dismissModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="confirmAddTask('${escHtml(projectId)}')">Add Task</button>
+    </div>`);
+  document.getElementById('m_taskName').focus();
+}
+function confirmAddTask(projectId) {
+  const name = document.getElementById('m_taskName').value.trim();
+  if (!name) { modalError('Task name is required.'); return; }
+  const fields = {
+    name,
+    priority: document.getElementById('m_taskPrio').value,
+    dueDate: document.getElementById('m_taskDue').value,
+    assignedTo: document.getElementById('m_taskAssignee').value.trim(),
+  };
+  dismissModal();
+  addAdHocTask(projectId, fields);
+}
+
+function showRemoveAdhoc(projectId, taskId) {
+  const p = getProject(projectId);
+  const t = p.tasks.find(t => t.id === taskId);
+  openModal(`
+    <div class="modal-header"><div class="modal-title">Remove ad-hoc task?</div></div>
+    <div class="confirm-body">Remove "<strong>${escHtml(t.name)}</strong>" and its time logs? Template tasks can never be removed; this is an ad-hoc task.</div>
+    <div class="confirm-actions">
+      <button class="btn btn-ghost" onclick="dismissModal()">Cancel</button>
+      <button class="btn btn-danger" onclick="dismissModal(); removeAdHocTask('${escHtml(projectId)}', ${taskId})">Remove</button>
+    </div>`);
+}
+
+function showRagModal(projectId) {
+  const p = getProject(projectId);
+  openModal(`
+    <div class="modal-header"><div class="modal-title">Override RAG Status</div></div>
+    <div class="modal-body">
+      <div class="text-muted" style="font-size:13px">Auto-calculated RAG is currently <strong>${calcRag(p) || '—'}</strong>. A manual override stays until cleared.</div>
+      <div class="form-group"><label>RAG</label><select id="m_ragValue">${selOptions(['Red','Amber','Green'], effectiveRag(p) || 'Green')}</select></div>
+      <div class="form-group"><label>Reason</label><textarea id="m_ragReason" placeholder="Why are you overriding the calculated RAG?"></textarea></div>
+      <div class="modal-error" id="modalError"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="dismissModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="confirmRag('${escHtml(projectId)}')">Set RAG</button>
+    </div>`);
+}
+function confirmRag(projectId) {
+  const reason = document.getElementById('m_ragReason').value.trim();
+  if (!reason) { modalError('A reason is required for a manual override.'); return; }
+  const value = document.getElementById('m_ragValue').value;
+  dismissModal();
+  setRagOverride(projectId, value, reason);
+}
+
+function showTimeLogModal(projectId, taskId, logId) {
+  const p = getProject(projectId);
+  const editing = logId != null ? p.timeLogs.find(l => l.id === logId) : null;
+  const selTask = editing ? editing.taskId : taskId;
+  const openTasks = p.tasks;
+  openModal(`
+    <div class="modal-header"><div class="modal-title">${editing ? 'Edit Time Log' : 'Log Time'}</div></div>
+    <div class="modal-body">
+      <div class="form-group"><label>Task</label>
+        <select id="m_logTask">${openTasks.map(t => `<option value="${t.id}" ${t.id===selTask?'selected':''}>${escHtml(t.name)}</option>`).join('')}</select>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px">
+        <div class="form-group"><label>Date</label><input type="date" id="m_logDate" value="${editing ? escHtml(editing.date) : todayISO()}" /></div>
+        <div class="form-group"><label>Hours</label><input type="number" id="m_logHours" min="0" max="24" value="${editing ? editing.hours : 0}" /></div>
+        <div class="form-group"><label>Minutes</label><input type="number" id="m_logMins" min="0" max="59" step="5" value="${editing ? editing.minutes : 30}" /></div>
+      </div>
+      <div class="form-group"><label>Activity type</label><select id="m_logType">${selOptions(ACTIVITY_TYPES, editing ? editing.activityType : ACTIVITY_TYPES[0])}</select></div>
+      <div class="form-group"><label>Notes (optional)</label><input type="text" id="m_logNotes" value="${editing ? escHtml(editing.notes) : ''}" placeholder="What was done?" /></div>
+      <div class="modal-error" id="modalError"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="dismissModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="confirmTimeLog('${escHtml(projectId)}', ${logId != null ? logId : 'null'})">${editing ? 'Save Changes' : 'Log Time'}</button>
+    </div>`);
+}
+function confirmTimeLog(projectId, logId) {
+  const hours = parseInt(document.getElementById('m_logHours').value, 10) || 0;
+  const minutes = parseInt(document.getElementById('m_logMins').value, 10) || 0;
+  const date = document.getElementById('m_logDate').value;
+  if (!date) { modalError('Date is required.'); return; }
+  if (hours * 60 + minutes <= 0) { modalError('Enter a duration greater than zero.'); return; }
+  const fields = {
+    taskId: parseInt(document.getElementById('m_logTask').value, 10),
+    date, hours, minutes,
+    activityType: document.getElementById('m_logType').value,
+    notes: document.getElementById('m_logNotes').value.trim(),
+  };
+  dismissModal();
+  if (logId != null) updateTimeLog(projectId, logId, fields);
+  else addTimeLog(projectId, fields);
+}
+
+function showDeleteLog(projectId, logId) {
+  openModal(`
+    <div class="modal-header"><div class="modal-title">Delete time log?</div></div>
+    <div class="confirm-body">This removes the time entry. The deletion is recorded in the project activity history.</div>
+    <div class="confirm-actions">
+      <button class="btn btn-ghost" onclick="dismissModal()">Cancel</button>
+      <button class="btn btn-danger" onclick="dismissModal(); deleteTimeLog('${escHtml(projectId)}', ${logId})">Delete</button>
+    </div>`);
+}
+
+function showCancelModal(projectId) {
+  openModal(`
+    <div class="modal-header"><div class="modal-title">Cancel Project?</div></div>
+    <div class="modal-body">
+      <div class="text-muted" style="font-size:13px">Cancelling moves this project to History as a permanent read-only record. It cannot be reopened — a new project would be needed for this MCP.</div>
+      <div class="form-group"><label>Cancellation reason</label><textarea id="m_cancelReason" placeholder="Why is this project being cancelled?"></textarea></div>
+      <div class="modal-error" id="modalError"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="dismissModal()">Keep Project</button>
+      <button class="btn btn-danger" onclick="confirmCancel('${escHtml(projectId)}')">Cancel Project</button>
+    </div>`);
+}
+function confirmCancel(projectId) {
+  const reason = document.getElementById('m_cancelReason').value.trim();
+  if (!reason) { modalError('A cancellation reason is required.'); return; }
+  dismissModal();
+  cancelProject(projectId, reason);
+  navigate('history');
+}
+
+function showCloseModal(projectId) {
+  const p = getProject(projectId);
+  const blockers = closureBlockers(p);
+  const ok = blockers.length === 0;
+  const admin = isAdmin();
+
+  const checklist = `
+    <div class="checklist">
+      <div class="checklist-item"><span class="${ok ? 'check-ok' : 'check-bad'}">${ok ? '✓' : '✗'}</span>
+        ${ok ? 'All required tasks are Complete or formally Skipped.'
+             : `${blockers.length} required task${blockers.length > 1 ? 's are' : ' is'} still open:`}
+      </div>
+      ${blockers.map(t => `<div class="checklist-item" style="padding-left:22px;color:var(--text-muted)">• ${escHtml(t.name)} (${escHtml(t.status)})</div>`).join('')}
+    </div>`;
+
+  openModal(`
+    <div class="modal-header"><div class="modal-title">Close Project ${escHtml(p.id)}</div></div>
+    <div class="modal-body">
+      ${checklist}
+      ${!ok && admin ? '<div class="text-muted" style="font-size:12px;background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:8px 12px">As an admin you may override and close anyway. The override is recorded in the activity history.</div>' : ''}
+      ${!ok && !admin ? '<div class="text-muted" style="font-size:12px;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:8px 12px">Closure is blocked until required tasks are completed or formally skipped (or ask an admin to override).</div>' : ''}
+      <div class="form-group"><label>Close reason</label><select id="m_closeReason">${selOptions(CLOSE_REASONS, CLOSE_REASONS[0])}</select></div>
+      <div class="form-group"><label>Final summary</label><textarea id="m_finalSummary" placeholder="Outcome for the customer — is the customer in a better billing position than at the start?"></textarea></div>
+      <div class="modal-error" id="modalError"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="dismissModal()">Cancel</button>
+      <button class="btn btn-success" onclick="confirmClose('${escHtml(projectId)}')" ${!ok && !admin ? 'disabled' : ''}>
+        ${!ok && admin ? 'Override & Close' : 'Close Project'}
+      </button>
+    </div>`);
+}
+function confirmClose(projectId) {
+  const p = getProject(projectId);
+  const blockers = closureBlockers(p);
+  if (blockers.length > 0 && !isAdmin()) { modalError('Required tasks are still open.'); return; }
+  const finalSummary = document.getElementById('m_finalSummary').value.trim();
+  if (!finalSummary) { modalError('A final summary is required to close the project.'); return; }
+  const closeReason = document.getElementById('m_closeReason').value;
+  dismissModal();
+  closeProject(projectId, { finalSummary, closeReason, overridden: blockers.length > 0 });
+  navigate('history');
 }
 
 // ─────────────────────────────────────────────
-//  DRAWER
+//  VIEW: TEMPLATE ADMIN
+// ─────────────────────────────────────────────
+function renderTemplates() {
+  if (!isAdmin()) return `<div class="card"><div class="confirm-body">Template administration requires the Admin role. Switch role in the top-right corner.</div></div>`;
+  const data = getData();
+  const rows = data.templates.map(t => `
+    <tr>
+      <td class="fw-600">${escHtml(t.name)} ${t.isDefault ? '<span class="badge default-tag">Default</span>' : ''}</td>
+      <td style="max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${escHtml(t.description)}">${escHtml(t.description || '—')}</td>
+      <td>${t.tasks.length}</td>
+      <td>${t.isActive ? '<span class="badge badge-complete">Active</span>' : '<span class="badge badge-cancelled">Inactive</span>'}</td>
+      <td>
+        <div class="task-actions" style="justify-content:flex-start">
+          <button class="btn-notes" onclick="navigate('templateEdit', '${escHtml(t.id)}')">Edit</button>
+          ${!t.isDefault && t.isActive ? `<button class="btn-notes" onclick="setDefaultTemplate('${escHtml(t.id)}')">Make Default</button>` : ''}
+          <button class="btn-notes ${t.isActive ? 'danger' : ''}" onclick="toggleTemplateActive('${escHtml(t.id)}')">${t.isActive ? 'Deactivate' : 'Activate'}</button>
+        </div>
+      </td>
+    </tr>`).join('');
+
+  return `
+    <div class="card-header" style="margin-bottom:20px;background:transparent;border:none;padding:0;box-shadow:none">
+      <h1 style="font-size:20px;font-weight:700">Workflow Templates</h1>
+      <button class="btn btn-primary" onclick="navigate('templateEdit', null)">+ New Template</button>
+    </div>
+    <div class="card">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Template</th><th>Description</th><th>Tasks</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody>${rows || '<tr class="empty-row"><td colspan="5">No templates.</td></tr>'}</tbody>
+        </table>
+      </div>
+    </div>
+    <div class="text-muted" style="font-size:12px;margin-top:12px">Templates define the standard tasks created for new projects. Changing a template does not affect projects already created from it.</div>`;
+}
+
+function getTplDraft() {
+  if (tplDraft) return tplDraft;
+  const data = getData();
+  if (currentTemplateId) {
+    const t = getTemplate(data, currentTemplateId);
+    tplDraft = JSON.parse(JSON.stringify(t));
+  } else {
+    tplDraft = {
+      id: null, name: '', description: '', isDefault: false, isActive: true,
+      createdBy: currentUser(), createdDate: Date.now(),
+      tasks: [{ id: 1, order: 1, name: '', description: '', required: true, priority: 'Medium', dueOffsetDays: 7 }],
+    };
+  }
+  return tplDraft;
+}
+
+function renderTemplateEdit() {
+  if (!isAdmin()) { navigate('templates'); return ''; }
+  const t = getTplDraft();
+  const taskRows = t.tasks.map((tt, i) => `
+    <div class="tpl-task-row">
+      <div class="task-num">${i + 1}</div>
+      <input type="text" placeholder="Task name" value="${escHtml(tt.name)}" onchange="tplTaskField(${i}, 'name', this.value)" />
+      <select onchange="tplTaskField(${i}, 'priority', this.value)">${selOptions(PRIORITIES, tt.priority)}</select>
+      <div style="display:flex;align-items:center;gap:5px">
+        <input type="number" style="width:64px" min="0" value="${tt.dueOffsetDays ?? 0}" onchange="tplTaskField(${i}, 'dueOffsetDays', parseInt(this.value,10)||0)" title="Due date offset in days from assignment date" />
+        <span style="font-size:11px;color:var(--text-muted)">days</span>
+      </div>
+      <label style="display:flex;align-items:center;gap:5px;text-transform:none;font-size:12px;cursor:pointer">
+        <input type="checkbox" ${tt.required ? 'checked' : ''} onchange="tplTaskField(${i}, 'required', this.checked)" /> Required
+      </label>
+      <div class="tpl-move">
+        <button onclick="tplMoveTask(${i}, -1)" ${i === 0 ? 'disabled' : ''} title="Move up">▲</button>
+        <button onclick="tplMoveTask(${i}, 1)" ${i === t.tasks.length - 1 ? 'disabled' : ''} title="Move down">▼</button>
+        <button onclick="tplRemoveTask(${i})" ${t.tasks.length <= 1 ? 'disabled' : ''} title="Remove">✕</button>
+      </div>
+    </div>`).join('');
+
+  return `
+    <a class="back-link" onclick="tplDraft=null; navigate('templates')">← Back to Templates</a>
+    <div class="card" style="max-width:860px">
+      <div class="card-header"><span class="card-title">${t.id ? 'Edit Template' : 'New Template'}</span></div>
+      <div class="form-grid">
+        <div class="form-group"><label>Template name</label><input type="text" id="t_name" value="${escHtml(t.name)}" placeholder="e.g. Standard Customer Assignment" onchange="tplField('name', this.value)" /></div>
+        <div class="form-group"><label>Active</label>
+          <select id="t_active" onchange="tplField('isActive', this.value === 'yes')">
+            <option value="yes" ${t.isActive ? 'selected' : ''}>Active — available for new projects</option>
+            <option value="no" ${!t.isActive ? 'selected' : ''}>Inactive</option>
+          </select>
+        </div>
+        <div class="form-group full"><label>Description</label><input type="text" id="t_desc" value="${escHtml(t.description)}" onchange="tplField('description', this.value)" /></div>
+      </div>
+      <div class="task-section-header" style="border-top:1px solid var(--border)">
+        <span class="task-section-title">Template tasks (in workflow order)</span>
+        <button class="btn btn-ghost btn-sm" onclick="tplAddTask()">+ Add Task</button>
+      </div>
+      <div class="tpl-task-row" style="background:var(--bg)">
+        <div></div>
+        <div class="task-col-label">Task name</div>
+        <div class="task-col-label">Priority</div>
+        <div class="task-col-label">Due offset</div>
+        <div class="task-col-label">Required</div>
+        <div class="task-col-label">Order</div>
+      </div>
+      ${taskRows}
+      <div class="form-error hidden" id="tplError" style="margin-top:16px"></div>
+      <div class="form-actions" style="padding-top:20px">
+        <button class="btn btn-ghost" onclick="tplDraft=null; navigate('templates')">Cancel</button>
+        <button class="btn btn-primary" onclick="saveTplDraft()">Save Template</button>
+      </div>
+    </div>`;
+}
+
+function tplField(field, value) { getTplDraft()[field] = value; }
+function tplTaskField(idx, field, value) { getTplDraft().tasks[idx][field] = value; }
+function tplAddTask() {
+  const t = getTplDraft();
+  const maxId = t.tasks.reduce((m, x) => Math.max(m, x.id), 0);
+  t.tasks.push({ id: maxId + 1, order: t.tasks.length + 1, name: '', description: '', required: false, priority: 'Medium', dueOffsetDays: 7 });
+  render();
+}
+function tplMoveTask(idx, dir) {
+  const t = getTplDraft();
+  const j = idx + dir;
+  if (j < 0 || j >= t.tasks.length) return;
+  [t.tasks[idx], t.tasks[j]] = [t.tasks[j], t.tasks[idx]];
+  t.tasks.forEach((x, i) => x.order = i + 1);
+  render();
+}
+function tplRemoveTask(idx) {
+  const t = getTplDraft();
+  if (t.tasks.length <= 1) return;
+  t.tasks.splice(idx, 1);
+  t.tasks.forEach((x, i) => x.order = i + 1);
+  render();
+}
+function saveTplDraft() {
+  const t = getTplDraft();
+  const err = document.getElementById('tplError');
+  if (!t.name.trim()) { err.textContent = 'Template name is required.'; err.classList.remove('hidden'); return; }
+  if (t.tasks.some(x => !x.name.trim())) { err.textContent = 'Every template task needs a name.'; err.classList.remove('hidden'); return; }
+  const data = getData();
+  t.tasks.forEach((x, i) => x.order = i + 1);
+  if (t.id) {
+    const idx = data.templates.findIndex(x => x.id === t.id);
+    if (idx >= 0) data.templates[idx] = t;
+  } else {
+    t.id = 'TPL-' + data.nextTemplateId++;
+    if (data.templates.length === 0) t.isDefault = true;
+    data.templates.push(t);
+  }
+  saveData(data);
+  tplDraft = null;
+  navigate('templates');
+}
+
+// ─────────────────────────────────────────────
+//  VIEW: DASHBOARD
+// ─────────────────────────────────────────────
+function barList(items, color, fmt) {
+  if (items.length === 0) return '<div class="chart-empty">No data yet.</div>';
+  const max = Math.max(...items.map(i => i.value), 1);
+  return `<div class="bar-list">` + items.map(i => `
+    <div class="bar-row" title="${escHtml(i.label)}: ${escHtml(fmt ? fmt(i.value) : String(i.value))}">
+      <div class="bar-label">${escHtml(i.label)}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${Math.round(i.value / max * 100)}%;${color ? 'background:' + color(i) : ''}"></div></div>
+      <div class="bar-value">${escHtml(fmt ? fmt(i.value) : String(i.value))}</div>
+    </div>`).join('') + `</div>`;
+}
+
+function renderDashboard() {
+  const data = getData();
+  const active = activeProjects(data);
+  const hist = historicalProjects(data);
+  const today = todayISO();
+  const cutoff30 = Date.now() - 30 * 86400000;
+
+  // stat tiles
+  let overdueTasks = 0, blockedTasks = 0;
+  active.forEach(p => p.tasks.forEach(t => {
+    if (!OPEN_TASK(t.status)) return;
+    if (t.status === 'Blocked') blockedTasks++;
+    if (t.dueDate && t.dueDate < today) overdueTasks++;
+  }));
+  let mins30 = 0;
+  data.projects.forEach(p => p.timeLogs.forEach(l => { if (l.createdTs >= cutoff30) mins30 += l.hours * 60 + l.minutes; }));
+
+  // projects by status
+  const byStatus = PROJECT_STATUSES
+    .map(s => ({ label: s, value: active.filter(p => p.status === s).length }))
+    .filter(i => i.value > 0);
+
+  // by RAG (status palette — label + count carry meaning, never color alone)
+  const ragColors = { Red: 'var(--viz-critical)', Amber: 'var(--viz-warning)', Green: 'var(--viz-good)' };
+  const byRag = ['Red', 'Amber', 'Green']
+    .map(r => ({ label: r, value: active.filter(p => effectiveRag(p) === r).length, rag: r }))
+    .filter(i => i.value > 0);
+
+  // open work by assignee
+  const byAssignee = {};
+  active.forEach(p => p.tasks.forEach(t => {
+    if (!OPEN_TASK(t.status)) return;
+    const who = t.assignedTo || p.assignee || '—';
+    byAssignee[who] = (byAssignee[who] || 0) + 1;
+  }));
+  const assigneeItems = Object.entries(byAssignee).map(([label, value]) => ({ label, value }))
+    .sort((a, b) => b.value - a.value).slice(0, 8);
+
+  // time by user (30 days)
+  const byUser = {};
+  data.projects.forEach(p => p.timeLogs.forEach(l => {
+    if (l.createdTs < cutoff30) return;
+    byUser[l.user || '—'] = (byUser[l.user || '—'] || 0) + l.hours * 60 + l.minutes;
+  }));
+  const userItems = Object.entries(byUser).map(([label, value]) => ({ label, value }))
+    .sort((a, b) => b.value - a.value).slice(0, 8);
+
+  // closed per month, last 6 months
+  const months = [];
+  const now = new Date();
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    months.push({ key: `${d.getFullYear()}-${d.getMonth()}`, label: d.toLocaleDateString('en-US', { month: 'short' }), value: 0 });
+  }
+  hist.forEach(p => {
+    if (!p.closedDate) return;
+    const d = new Date(p.closedDate);
+    const m = months.find(m => m.key === `${d.getFullYear()}-${d.getMonth()}`);
+    if (m) m.value++;
+  });
+  const maxClosed = Math.max(...months.map(m => m.value), 1);
+
+  // aging
+  const aging = [...active].sort((a, b) => daysOpen(b) - daysOpen(a)).slice(0, 6);
+
+  return `
+    <div class="card-header" style="margin-bottom:20px;background:transparent;border:none;padding:0;box-shadow:none">
+      <h1 style="font-size:20px;font-weight:700">Dashboard</h1>
+      <button class="btn btn-primary" onclick="navigate('create')">+ Create Project</button>
+    </div>
+
+    <div class="dash-grid">
+      <div class="stat-tile"><div class="stat-value">${active.length}</div><div class="stat-label">Active projects</div><div class="stat-sub">${hist.length} in history</div></div>
+      <div class="stat-tile ${overdueTasks ? 'stat-alert' : ''}"><div class="stat-value">${overdueTasks}</div><div class="stat-label">Overdue open tasks</div><div class="stat-sub">across active projects</div></div>
+      <div class="stat-tile ${blockedTasks ? 'stat-alert' : ''}"><div class="stat-value">${blockedTasks}</div><div class="stat-label">Blocked tasks</div><div class="stat-sub">need attention</div></div>
+      <div class="stat-tile"><div class="stat-value">${fmtDuration(mins30)}</div><div class="stat-label">Time logged</div><div class="stat-sub">last 30 days</div></div>
+    </div>
+
+    <div class="dash-charts">
+      <div class="card"><div class="card-header"><span class="card-title">Active projects by status</span></div>
+        <div class="chart-body">${barList(byStatus)}</div>
+      </div>
+      <div class="card"><div class="card-header"><span class="card-title">Active projects by RAG</span></div>
+        <div class="chart-body">${barList(byRag, i => ragColors[i.rag])}</div>
+      </div>
+      <div class="card"><div class="card-header"><span class="card-title">Open tasks by assignee</span></div>
+        <div class="chart-body">${barList(assigneeItems)}</div>
+      </div>
+      <div class="card"><div class="card-header"><span class="card-title">Time logged by user <span class="text-muted" style="font-size:11px;font-weight:400">(30 days)</span></span></div>
+        <div class="chart-body">${barList(userItems, null, fmtDuration)}</div>
+      </div>
+      <div class="card"><div class="card-header"><span class="card-title">Projects closed per month</span></div>
+        <div class="chart-body">
+          <div class="col-chart">
+            ${months.map(m => `
+              <div class="col-item" title="${m.label}: ${m.value} closed">
+                ${m.value ? `<span class="col-val">${m.value}</span>` : ''}
+                <div class="col-bar ${m.value ? '' : 'zero'}" style="height:${Math.max(Math.round(m.value / maxClosed * 100), 2)}%"></div>
+              </div>`).join('')}
+          </div>
+          <div class="col-labels">${months.map(m => `<span class="col-month">${m.label}</span>`).join('')}</div>
+        </div>
+      </div>
+      <div class="card"><div class="card-header"><span class="card-title">Oldest active projects</span></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Project</th><th>MCP</th><th>Status</th><th>RAG</th><th>Days</th></tr></thead>
+            <tbody>
+              ${aging.length === 0 ? '<tr class="empty-row"><td colspan="5">No active projects.</td></tr>' : aging.map(p => `
+                <tr class="clickable" onclick="navigate('detail','${escHtml(p.id)}')">
+                  <td class="fw-600" style="color:var(--accent)">${escHtml(p.id)}</td>
+                  <td>${escHtml(p.mcpName)}</td>
+                  <td>${projectBadge(p.status)}</td>
+                  <td>${ragChip(p)}</td>
+                  <td class="fw-600">${daysOpen(p)}</td>
+                </tr>`).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>`;
+}
+
+// ─────────────────────────────────────────────
+//  DRAWER (notes & activity)
 // ─────────────────────────────────────────────
 let drawerCtx = null; // { projectId, taskId: number|null }
 
 function openProjectDrawer(projectId) {
   const p = getProject(projectId);
   if (!p) return;
-  drawerCtx = { projectId, taskId: null };
-  _openDrawer(p.id + ' — Project Notes & Activity', 'Project');
+  _openDrawer({ projectId, taskId: null }, p.id + ' — Project Notes & Activity', 'Project', isTerminal(p));
 }
 
 function openTaskDrawer(projectId, taskId) {
@@ -911,12 +2187,12 @@ function openTaskDrawer(projectId, taskId) {
   if (!p) return;
   const t = p.tasks.find(t => t.id === taskId);
   if (!t) return;
-  drawerCtx = { projectId, taskId };
-  _openDrawer(t.name, 'Task Notes & Activity');
+  _openDrawer({ projectId, taskId }, t.name, 'Task Notes & Activity', isTerminal(p));
 }
 
-function _openDrawer(title, subtitle) {
+function _openDrawer(ctx, title, subtitle, readOnly) {
   closeDrawer();
+  drawerCtx = ctx;
 
   const overlay = document.createElement('div');
   overlay.className = 'drawer-overlay';
@@ -929,15 +2205,9 @@ function _openDrawer(title, subtitle) {
   drawer.className = 'drawer';
   drawer.addEventListener('click', function(e) { e.stopPropagation(); });
 
-  drawer.innerHTML = `
-    <div class="drawer-header">
-      <div style="min-width:0">
-        <div class="drawer-title-sub">${escHtml(subtitle)}</div>
-        <div class="drawer-title">${escHtml(title)}</div>
-      </div>
-      <button class="drawer-close" onclick="closeDrawer()" title="Close">✕</button>
-    </div>
-    <div class="drawer-body">
+  const editorHtml = readOnly
+    ? `<div class="text-muted" style="font-size:12px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 14px">This project is closed — notes are read-only.</div>`
+    : `
       <div>
         <div class="rte-section-label">Add Note</div>
         <div class="rte-wrap">
@@ -952,9 +2222,23 @@ function _openDrawer(title, subtitle) {
           <div class="rte-editor" id="rteEditor" contenteditable="true" data-placeholder="Write a note…"></div>
         </div>
         <div class="rte-actions">
+          <select class="note-cat-select" id="noteCategory" title="Note category">
+            ${NOTE_CATEGORIES.map(c => `<option>${c}</option>`).join('')}
+          </select>
           <button class="btn btn-primary" onclick="saveDrawerNote()">Save Note</button>
         </div>
+      </div>`;
+
+  drawer.innerHTML = `
+    <div class="drawer-header">
+      <div style="min-width:0">
+        <div class="drawer-title-sub">${escHtml(subtitle)}</div>
+        <div class="drawer-title">${escHtml(title)}</div>
       </div>
+      <button class="drawer-close" onclick="closeDrawer()" title="Close">✕</button>
+    </div>
+    <div class="drawer-body">
+      ${editorHtml}
       <div>
         <div class="history-divider">
           <span class="history-divider-label">History</span>
@@ -967,7 +2251,6 @@ function _openDrawer(title, subtitle) {
   overlay.appendChild(drawer);
   document.body.appendChild(overlay);
 
-  // Focus editor
   const editor = document.getElementById('rteEditor');
   if (editor) editor.focus();
 
@@ -980,7 +2263,7 @@ function closeDrawer() {
 }
 
 document.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape') closeDrawer();
+  if (e.key === 'Escape') { closeDrawer(); dismissModal(); }
 });
 
 function rteCmd(cmd) {
@@ -995,17 +2278,14 @@ function saveDrawerNote() {
   if (!editor) return;
   const html = editor.innerHTML.trim();
 
-  // Check for effectively empty content
   const tmp = document.createElement('div');
   tmp.innerHTML = html;
   if (!tmp.textContent.trim()) return;
 
+  const category = document.getElementById('noteCategory')?.value || 'General Update';
   const { projectId, taskId } = drawerCtx;
-  if (taskId === null) {
-    addProjectNote(projectId, html);
-  } else {
-    addTaskNote(projectId, taskId, html);
-  }
+  if (taskId === null) addProjectNote(projectId, html, category);
+  else addTaskNote(projectId, taskId, html, category);
 
   editor.innerHTML = '';
   renderDrawerHistory();
@@ -1016,14 +2296,11 @@ function renderDrawerHistory() {
   if (!histEl || !drawerCtx) return;
 
   const { projectId, taskId } = drawerCtx;
+  const p = getProject(projectId);
   let entries = [];
-
-  if (taskId === null) {
-    const p = getProject(projectId);
-    entries = p ? (p.history || []) : [];
-  } else {
-    const p = getProject(projectId);
-    if (p) {
+  if (p) {
+    if (taskId === null) entries = p.history || [];
+    else {
       const t = p.tasks.find(t => t.id === taskId);
       entries = t ? (t.history || []) : [];
     }
@@ -1051,6 +2328,8 @@ function renderDrawerHistory() {
       return `
         <div class="history-entry">
           <div class="history-entry-meta">
+            ${entry.category ? `<span class="history-tag cat">${escHtml(entry.category)}</span>` : ''}
+            ${entry.user ? `<span class="history-user">${escHtml(entry.user)}</span>` : ''}
             <span class="history-ts">${ts}</span>
           </div>
           <div class="history-content-note">${entry.html}</div>
@@ -1062,21 +2341,53 @@ function renderDrawerHistory() {
 // ─────────────────────────────────────────────
 //  RENDER
 // ─────────────────────────────────────────────
+const NAV_ITEMS = [
+  { view: 'dashboard', label: 'Dashboard' },
+  { view: 'projects',  label: 'Projects' },
+  { view: 'history',   label: 'History' },
+  { view: 'templates', label: 'Templates', adminOnly: true },
+];
+
+function renderNav() {
+  const nav = document.getElementById('mainNav');
+  const groupOf = v => (v === 'create' || v === 'detail') ? (getProject(currentProjectId) && isTerminal(getProject(currentProjectId)) && currentView === 'detail' ? 'history' : 'projects') : (v === 'templateEdit' ? 'templates' : v);
+  const activeGroup = groupOf(currentView);
+  nav.innerHTML = NAV_ITEMS
+    .filter(i => !i.adminOnly || isAdmin())
+    .map(i => `<button class="nav-btn ${activeGroup === i.view ? 'active' : ''}" onclick="navigate('${i.view}')">${i.label}</button>`)
+    .join('');
+}
+
+function renderUserBox() {
+  const d = getData();
+  const nameInput = document.getElementById('userNameInput');
+  const roleSelect = document.getElementById('userRoleSelect');
+  if (document.activeElement !== nameInput) nameInput.value = d.settings.currentUser;
+  roleSelect.value = d.settings.role;
+}
+
 function render() {
   const app = document.getElementById('app');
   let html = '';
-  if (currentView === 'home')         html = renderHome();
-  else if (currentView === 'create')  html = renderCreate();
-  else if (currentView === 'detail')  html = renderDetail();
+  if (currentView === 'dashboard')         html = renderDashboard();
+  else if (currentView === 'projects')     html = renderProjects();
+  else if (currentView === 'history')      html = renderHistory();
+  else if (currentView === 'create')       html = renderCreate();
+  else if (currentView === 'detail')       html = renderDetail();
+  else if (currentView === 'templates')    html = renderTemplates();
+  else if (currentView === 'templateEdit') html = renderTemplateEdit();
   app.innerHTML = html;
 
-  // Apply select colors after render
+  renderNav();
+  renderUserBox();
   document.querySelectorAll('.task-select').forEach(statusSelectStyle);
+  if (currentView === 'create') renderTemplatePreview();
 }
 
 // ─────────────────────────────────────────────
 //  BOOT
 // ─────────────────────────────────────────────
+getData(); // ensure migration + seed
 render();
 </script>
 </body>
